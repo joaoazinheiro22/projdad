@@ -1,12 +1,14 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-// Create a reactive reference for today's date
-const today = new Date();
+const router = useRouter();
 
-// Format the date to match "Monday, Nov. 25, 2024"
-const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
-const formattedDate = today.toLocaleDateString('en-US', options);
+// Function to navigate to the GameBoard
+const goToGameBoard = (mode) => {
+  router.push({ name: 'GameBoard', params: { mode } });
+};
+
 </script>
 
 <template>
@@ -15,31 +17,26 @@ const formattedDate = today.toLocaleDateString('en-US', options);
     <!-- Header Section -->
     <div class="text-center text-white">
       <h1 class="text-4xl font-bold">Memory Game</h1>
-      <p class="text-lg mt-2">{{formattedDate}}</p>
     </div>
 
-    <!-- Main Puzzle Options -->
+
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-4 max-w-5xl">
-      <!-- The Mini -->
-      <div class="bg-white shadow-md rounded-md p-6 text-center">
+      <!-- 3x4 -->
+      <div @click="goToGameBoard('3x4')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
         <div class="w-12 h-12 mx-auto bg-black"></div>
         <h2 class="text-2xl font-bold mt-4">3x4</h2>
-        <p class="text-gray-600 mt-1">{{formattedDate}}</p>
-        <!-- <p class="text-sm text-gray-500 mt-2">By WYNA LIU<br />Edited by SAM EZERSKY</p> -->
       </div>
 
-      <!-- The Crossword -->
-      <div class="bg-white shadow-md rounded-md p-6 text-center opacity-70">
-        <div class="w-12 h-12 mx-auto bg-gray-300"></div>
+      <!-- 4x4 -->
+      <div @click="goToGameBoard('4x4')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
+        <div class="w-12 h-12 mx-auto bg-black"></div>
         <h2 class="text-2xl font-bold mt-4">4x4</h2>
-        <p class="text-gray-600 mt-1">{{formattedDate}}</p>
       </div>
 
-      <!-- Spelling Bee -->
-      <div class="bg-white shadow-md rounded-md p-6 text-center opacity-70">
-        <div class="w-12 h-12 mx-auto bg-gray-300"></div>
+      <!-- 6x6 -->
+      <div @click="goToGameBoard('6x6')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
+        <div class="w-12 h-12 mx-auto bg-black"></div>
         <h2 class="text-2xl font-bold mt-4">6x6</h2>
-        <p class="text-gray-600 mt-1">{{formattedDate}}</p>
       </div>
     </div>
 
