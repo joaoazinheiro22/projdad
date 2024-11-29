@@ -39,8 +39,13 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $this->purgeExpiredTokens();
-        $this->revokeCurrentToken($request->user());
-        return response()->json(null, 204);
+        $user = $request->user();
+        if ($user) {
+            $this->revokeCurrentToken($user);
+            return response()->json(null, 204);
+        } else {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
     }
 
     public function refreshToken(Request $request)

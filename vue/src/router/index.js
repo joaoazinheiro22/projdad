@@ -1,5 +1,5 @@
 import HomeComponent from '@/components/HomeComponent.vue'
-import LaravelTester from '@/components/LaravelTester.vue'
+import Login from '@/components/Login.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import GameBoard from '@/components/ui/GameBoard.vue'
@@ -16,15 +16,15 @@ const router = createRouter({
       path: '/game/:mode',
       name: 'GameBoard',
       component: GameBoard,
-      props: true,
+      props: true
+    },
+    {
+      path: '/login',
+      component: Login
     },
     {
       path: '/testers',
       children: [
-        {
-          path: 'laravel',
-          component: LaravelTester
-        },
         {
           path: 'websocket',
           component: WebSocketTester
