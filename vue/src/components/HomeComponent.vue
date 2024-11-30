@@ -10,6 +10,14 @@ const goToGameBoard = (mode) => {
   router.push({ name: 'GameBoard', params: { mode } });
 };
 
+const goToLogin = () => {
+  router.push({ name: 'Login' });
+};
+
+const goToUserProfile = (id) => {
+  router.push({ name: 'UserProfile', params: { id } });
+};
+
 // Auth store
 const authStore = useAuthStore();
 
@@ -46,8 +54,13 @@ const authStore = useAuthStore();
 
     <!-- Footer Section -->
     <div v-if="!authStore.user" class="text-center text-white">
-      <p class="underline cursor-pointer hover:text-gray-200">
-        Login to see your history (???)
+      <p @click="goToLogin" class="underline cursor-pointer hover:text-gray-200">
+        Login to see your history
+      </p>
+    </div>
+    <div v-else class="text-center text-white">
+      <p @click="goToUserProfile" class="underline cursor-pointer hover:text-gray-200">
+        See my history
       </p>
     </div>
 

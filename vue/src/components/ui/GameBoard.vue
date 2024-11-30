@@ -1,8 +1,13 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
+
+const goToHomeBoard = () => {
+  router.push({ name: 'home' });
+};
 
 // Definir o modo de jogo e criar o grid
 const mode = computed(() => route.params.mode);
@@ -29,9 +34,42 @@ const cols = computed(() => {
 const cards = ref([]);
 const selectedCards = ref([]);
 const matchedCards = ref([]);
+const isGameWon = ref(false);
+const turnCount = ref(0);
+
+// Timer logic
+const startTime = ref(Date.now());
+const elapsedTime = ref(0);
+const timerInterval = ref(null);
+
+const formattedTime = computed(() => {
+  const minutes = Math.floor(elapsedTime.value / 60000);
+  const seconds = Math.floor((elapsedTime.value % 60000) / 1000);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+});
+
+const startTimer = () => {
+  startTime.value = Date.now();
+  timerInterval.value = setInterval(() => {
+    elapsedTime.value = Date.now() - startTime.value;
+  }, 1000);
+};
+
+const stopTimer = () => {
+  if (timerInterval.value) {
+    clearInterval(timerInterval.value);
+  }
+};
 
 // Função para inicializar o jogo
 const initializeGame = () => {
+  // Reset game state
+  turnCount.value = 0;
+
+  matchedCards.value = [];
+  selectedCards.value = [];
+  isGameWon.value = false;
+  
   // Definir os naipes
   const suits = ['c', 'e', 'p', 'o'];
   
@@ -48,8 +86,13 @@ const initializeGame = () => {
   const totalCards = rows.value * cols.value;
   
   // Selecionar e embaralhar as cartas necessárias
-  cards.value = cardSet.slice(0, totalCards / 2).flatMap(card => [{ ...card, uniqueKey: Math.random() },{ ...card, uniqueKey: Math.random() }])
-                        .sort(() => Math.random() - 0.5);
+  cards.value = cardSet.slice(0, totalCards / 2).flatMap(card => [
+    { ...card, uniqueKey: Math.random() },
+    { ...card, uniqueKey: Math.random() }
+  ]).sort(() => Math.random() - 0.5);
+
+  // Start the timer
+  startTimer();
 };
 
 // Lógica de virar cartas
@@ -67,6 +110,9 @@ const flipCard = (card) => {
 
   // Verificar combinação quando duas cartas são selecionadas
   if (selectedCards.value.length === 2) {
+    
+    turnCount.value++;
+
     setTimeout(() => {
       if (selectedCards.value[0].id === selectedCards.value[1].id) {
         // Cartas combinam
@@ -80,8 +126,26 @@ const flipCard = (card) => {
       }
       // Limpar seleção
       selectedCards.value = [];
+
+      // Check for game completion
+      checkGameCompletion();
     }, 1000); // Tempo para mostrar as cartas antes de virar
   }
+};
+
+// Check game completion
+const checkGameCompletion = () => {
+  const allCardsFlipped = cards.value.every(card => card.isFlipped);
+  
+  if (allCardsFlipped) {
+    stopTimer();
+    isGameWon.value = true;
+  }
+};
+
+// Restart game function
+const restartGame = () => {
+  initializeGame();
 };
 
 // Inicializar o jogo quando o componente for montado
@@ -91,47 +155,72 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex flex-col items-center justify-center p-5">
-      <h1 class="text-3xl font-bold mb-4">Game Mode: {{ mode }}</h1>
-      
+  <div class="flex flex-col items-center justify-center p-5">
+    <h1 class="text-3xl font-bold mb-4">Game Mode: {{ mode }}</h1>
+    <h2>Timer: {{ formattedTime }}</h2>
+    <h2>Number of turns: {{ turnCount }} </h2>
+    <br>
+    
+    <div 
+      class="grid gap-2 w-full max-w-2xl aspect-video" 
+      :style="{ 
+        gridTemplateRows: `repeat(${rows}, 1fr)`, 
+        gridTemplateColumns: `repeat(${cols}, 1fr)` 
+      }"
+    >
       <div 
-        class="grid gap-2 w-full max-w-2xl aspect-video" 
-        :style="{ 
-          gridTemplateRows: `repeat(${rows}, 1fr)`, 
-          gridTemplateColumns: `repeat(${cols}, 1fr)` 
-        }"
+        v-for="card in cards" 
+        :key="card.uniqueKey" 
+        class="flex items-center justify-center aspect-square cursor-pointer"
+        @click="flipCard(card)"
       >
-      <div 
-  v-for="card in cards" 
-  :key="card.uniqueKey" 
-  class="flex items-center justify-center aspect-square cursor-pointer"
-  @click="flipCard(card)"
->
-  <div class="card" :class="{ 'is-flipped': card.isFlipped }">
-    <!-- Frente da carta -->
-    <img 
-      class="card-front w-full h-full object-contain"
-      :src="card.image" 
-      alt="Card Front"
-      :class="{
-            'rotate-y-180': card.isFlipped,
-            'opacity-50': matchedCards.includes(card.id)
-          }"
-    >
-    <!-- Verso da carta -->
-    <img 
-      class="card-back w-full h-full object-contain"
-      src="/card_back.png" 
-      alt="Card Back"
-      
-    >
-  </div>
-</div>
-
+        <div class="card" :class="{ 'is-flipped': card.isFlipped }">
+          <!-- Frente da carta -->
+          <img 
+            class="card-front w-full h-full object-contain"
+            :src="card.image" 
+            alt="Card Front"
+            :class="{
+              'rotate-y-180': card.isFlipped,
+              'opacity-50': matchedCards.includes(card.id)
+            }"
+          >
+          <!-- Verso da carta -->
+          <img 
+            class="card-back w-full h-full object-contain"
+            src="/card_back.png" 
+            alt="Card Back"
+          >
+        </div>
       </div>
     </div>
-  </template>
-  
+
+    <!-- Win Modal -->
+    <div 
+      v-if="isGameWon" 
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white p-8 rounded-lg text-center">
+        <h2 class="text-2xl font-bold mb-4">Congratulations!</h2>
+        <p>You've won the game in {{ formattedTime }}!</p>
+        <p>Number of turns: {{ turnCount }}</p>
+        <button 
+          @click="restartGame" 
+          class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition"
+        >
+          Play Again
+        </button>
+        <hr>
+        <button 
+          @click="goToHomeBoard" 
+          class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style>
 .card {
