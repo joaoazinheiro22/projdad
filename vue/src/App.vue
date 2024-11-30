@@ -1,12 +1,13 @@
 <script setup>
 import Toaster from './components/ui/toast/Toaster.vue';
 import { useAuthStore } from '@/stores/auth';
-import axios from 'axios';
+import router from './router';
 
 const authStore = useAuthStore()
 
 const logout = async () => {
   await authStore.logout()
+  router.push('/')
 };
 
 
@@ -32,9 +33,13 @@ const logout = async () => {
           </div>
           <div class="flex items-center space-x-4">
             <div v-if="authStore.user" class="flex items-center space-x-2">
-              <img class="w-10 h-10 rounded-full" :src="authStore.userPhotoUrl" alt="User avatar">
-              <span class="text-gray-900">{{ authStore.userFirstLastName }}</span>
-              <button @click="logout"
+              <RouterLink :to="`/profile/${authStore.userId}`"
+                class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                active-class="text-blue-600 font-semibold">
+                <img class="w-10 h-10 rounded-full" :src="authStore.userPhotoUrl" alt="User avatar">
+                <span class="text-gray-900">{{ authStore.userFirstLastName }}</span>
+              </RouterLink>
+              <button v-if="authStore.user" @click="logout"
                 class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 Logout
               </button>
@@ -43,6 +48,11 @@ const logout = async () => {
               class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               active-class="text-blue-600 font-semibold">
               Login
+            </RouterLink>
+            <RouterLink v-if="!authStore.user" to="/register"
+              class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              active-class="text-blue-600 font-semibold">
+              Register
             </RouterLink>
           </div>
         </nav>

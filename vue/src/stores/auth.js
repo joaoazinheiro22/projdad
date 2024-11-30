@@ -15,6 +15,10 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value ? user.value.name : ''
   })
 
+  const userId = computed(() => {
+    return user.value ? user.value.id : ''
+  })
+
   const userFirstLastName = computed(() => {
     const names = userName.value.trim().split(' ')
     const firstName = names[0] ?? ''
@@ -49,11 +53,23 @@ export const useAuthStore = defineStore('auth', () => {
     axios.defaults.headers.common.Authorization = ''
   }
 
+  const register = async (userData) => {
+    try {
+      const response = await axios.post('auth/register', userData)
+      user.value = response.data
+      return 'Registration successful'
+    } catch (error) {
+      console.error('Registration failed:', error)
+      return 'Registration failed'
+    }
+  }
+
   const login = async (credentials) => {
     storeError.resetMessages()
     try {
       const responseLogin = await axios.post('auth/login', credentials)
       token.value = responseLogin.data.token
+      console.log('token', token.value)
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       const responseUser = await axios.get('users/me')
       user.value = responseUser.data
@@ -128,12 +144,14 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     user,
     userName,
+    userId,
     userFirstLastName,
     userEmail,
     userType,
     userGender,
     userPhotoUrl,
     login,
-    logout
+    logout,
+    register
   }
 })

@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 
@@ -9,11 +10,14 @@ const goToGameBoard = (mode) => {
   router.push({ name: 'GameBoard', params: { mode } });
 };
 
+// Auth store
+const authStore = useAuthStore();
+
 </script>
 
 <template>
   <div class="bg-blue-500 h-128 flex flex-col items-center space-y-12 py-12">
-    
+
     <!-- Header Section -->
     <div class="text-center text-white">
       <h1 class="text-4xl font-bold">Memory Game</h1>
@@ -41,22 +45,22 @@ const goToGameBoard = (mode) => {
     </div>
 
     <!-- Footer Section -->
-    <div class="text-center text-white">
+    <div v-if="!authStore.user" class="text-center text-white">
       <p class="underline cursor-pointer hover:text-gray-200">
         Login to see your history (???)
       </p>
     </div>
 
     <!-- More Games Section -->
-</div>
-<div class="bg-white w-full py-12">
-  <div class="max-w-5xl mx-auto px-4 text-center">
-    <h2 class="text-2xl font-bold mb-8">More Info Here</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-      <div class="bg-yellow-400 rounded-md p-6 shadow-md">
-        <h3 class="text-lg font-bold">Example</h3>
+  </div>
+  <div class="bg-white w-full py-12">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 class="text-2xl font-bold mb-8">More Info Here</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+        <div class="bg-yellow-400 rounded-md p-6 shadow-md">
+          <h3 class="text-lg font-bold">Example</h3>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>

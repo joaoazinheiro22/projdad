@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
-
 
 class AuthController extends Controller
 {
@@ -24,6 +25,23 @@ class AuthController extends Controller
         $currentTokenId = $user->currentAccessToken()->id;
         $user->tokens()->where('id', $currentTokenId)->delete();
     }
+
+    public function register(RegisterRequest $request)
+    {
+        $validatedData = $request->validated();
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'nickname' => $validatedData['nickname'],
+            'password' => Hash::make($validatedData['password']),
+            'photo' => $validatedData['photo'] ?? null,
+        ]);
+
+        $token = $user->createToken('authToken', ['*'], now()->addHours(2))->plainTextToken;
+
+        return response()->json(['token' => $token, 'user' => $user], 201);
+    }
+
 
     public function login(LoginRequest $request)
     {
