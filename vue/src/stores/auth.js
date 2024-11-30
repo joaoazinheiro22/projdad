@@ -9,7 +9,16 @@ export const useAuthStore = defineStore('auth', () => {
   const storeError = useErrorStore()
 
   const user = ref(null)
-  const token = ref('')
+  const token = ref(localStorage.getItem('authToken') || '')
+
+  if (token.value) {
+    axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+    axios.get('users/me').then(response => {
+      user.value = response.data
+    }).catch(() => {
+      clearUser()
+    })
+  }
 
   const userName = computed(() => {
     return user.value ? user.value.name : ''
@@ -46,10 +55,11 @@ export const useAuthStore = defineStore('auth', () => {
     return avatarNoneAssetURL
   })
 
-  // This function is "private" - not exported by the store
   const clearUser = () => {
     resetIntervalToRefreshToken()
     user.value = null
+    token.value = ''
+    localStorage.removeItem('authToken')
     axios.defaults.headers.common.Authorization = ''
   }
 
@@ -69,6 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const responseLogin = await axios.post('auth/login', credentials)
       token.value = responseLogin.data.token
+      localStorage.setItem('authToken', token.value)
       console.log('token', token.value)
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       const responseUser = await axios.get('users/me')
