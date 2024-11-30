@@ -74,4 +74,34 @@ class AuthController extends Controller
         $token = $request->user()->createToken('authToken', ['*'], now()->addHours(2))->plainTextToken;
         return response()->json(['token' => $token]);
     }
+
+    public function updateUser(Request $request)
+    {
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
+            'nickname' => 'sometimes|string|max:255',
+            'password' => 'sometimes|string|min:8|confirmed',
+            'photo' => 'sometimes|nullable|string',
+        ]);
+
+        if (isset($validatedData['password'])) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        }
+
+        $user->update($validatedData);
+
+        return response()->json(['user' => $user], 200);
+   }
+/*
+    public function deleteUser()
+    {
+        $user = Auth::user();
+        $user->forceDelete();
+
+        return response()->json(null, 204);
+    }
+        */
 }
