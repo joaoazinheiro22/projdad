@@ -1,6 +1,10 @@
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const route = useRoute();
 const router = useRouter();
@@ -140,6 +144,7 @@ const checkGameCompletion = () => {
   if (allCardsFlipped) {
     stopTimer();
     isGameWon.value = true;
+    addGame();
   }
 };
 
@@ -147,6 +152,24 @@ const checkGameCompletion = () => {
 const restartGame = () => {
   initializeGame();
 };
+
+
+const addGame = async () => {
+  try {
+    let gameData = {
+      winner_user_id: authStore.userId,
+      // turns: turnCount.value,
+      total_time: Math.floor(elapsedTime.value / 1000), // Convertido para segundos
+      mode: route.params.mode
+    };
+
+    const response = await axios.post('games', gameData);
+    console.log('Game data saved:', response.data);
+  } catch (error) {
+    console.error('Error saving game data:', error);
+  }
+};
+
 
 // Inicializar o jogo quando o componente for montado
 onMounted(() => {
@@ -157,12 +180,12 @@ onMounted(() => {
 <template>
   <div class="flex flex-col items-center justify-center p-5">
     <h1 class="text-3xl font-bold mb-4">Game Mode: {{ mode }}</h1>
-    <h2>Timer: {{ formattedTime }}</h2>
-    <h2>Number of turns: {{ turnCount }} </h2>
-    <br>
+    <h2 class="mb-2">Timer: {{ formattedTime }}</h2>
+    <h2 class="mb-4">Number of turns: {{ turnCount }} </h2>
+    <h2 class="mb-4">Username: {{ authStore.userFirstLastName }} </h2>
     
     <div 
-      class="grid gap-2 w-full max-w-2xl aspect-video" 
+      class="grid gap-2 w-full max-w-2xl p-4 rounded-lg bg-gray-100" 
       :style="{ 
         gridTemplateRows: `repeat(${rows}, 1fr)`, 
         gridTemplateColumns: `repeat(${cols}, 1fr)` 
@@ -171,26 +194,26 @@ onMounted(() => {
       <div 
         v-for="card in cards" 
         :key="card.uniqueKey" 
-        class="flex items-center justify-center aspect-square cursor-pointer"
-        @click="flipCard(card)"
+        class="card-container flex items-center justify-center aspect-square cursor-pointer"
       >
-        <div class="card" :class="{ 'is-flipped': card.isFlipped }">
-          <!-- Frente da carta -->
-          <img 
-            class="card-front w-full h-full object-contain"
-            :src="card.image" 
-            alt="Card Front"
-            :class="{
-              'rotate-y-180': card.isFlipped,
-              'opacity-50': matchedCards.includes(card.id)
-            }"
-          >
-          <!-- Verso da carta -->
-          <img 
-            class="card-back w-full h-full object-contain"
-            src="/card_back.png" 
-            alt="Card Back"
-          >
+        <div class="card" :class="{ 'is-flipped': card.isFlipped }" @click="flipCard(card)">
+          <div class="card-front">
+            <img 
+              class="w-full h-full object-contain"
+              :src="card.image" 
+              alt="Card Front"
+              :class="{
+                'opacity-50': matchedCards.includes(card.id)
+              }"
+            >
+          </div>
+          <div class="card-back">
+            <img 
+              class="w-full h-full object-contain"
+              src="/card_back.png" 
+              alt="Card Back"
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -198,19 +221,18 @@ onMounted(() => {
     <!-- Win Modal -->
     <div 
       v-if="isGameWon" 
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
-      <div class="bg-white p-8 rounded-lg text-center">
-        <h2 class="text-2xl font-bold mb-4">Congratulations!</h2>
-        <p>You've won the game in {{ formattedTime }}!</p>
-        <p>Number of turns: {{ turnCount }}</p>
+      <div class="bg-white p-8 rounded-lg text-center shadow-xl">
+        <h2 class="text-2xl font-bold mb-4">Congratulations {{authStore.userFirstName}}!</h2>
+        <p class="mb-2">You've won the game in {{ formattedTime }}!</p>
+        <p class="mb-4">Number of turns: {{ turnCount }}</p>
         <button 
           @click="restartGame" 
-          class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition"
+          class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition mr-2"
         >
           Play Again
         </button>
-        <hr>
         <button 
           @click="goToHomeBoard" 
           class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition"
@@ -223,20 +245,24 @@ onMounted(() => {
 </template>
 
 <style>
+.card-container {
+  perspective: 1000px;
+}
+
 .card {
-  position: relative;
   width: 100%;
   height: 100%;
+  position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.6s ease;
-  transform: rotateY(0deg);
+  transition: transform 0.6s;
 }
 
 .card.is-flipped {
   transform: rotateY(180deg);
 }
 
-.card-front, .card-back {
+.card-front, 
+.card-back {
   position: absolute;
   width: 100%;
   height: 100%;

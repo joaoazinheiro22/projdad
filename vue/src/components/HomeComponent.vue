@@ -35,19 +35,19 @@ const authStore = useAuthStore();
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-4 max-w-5xl">
       <!-- 3x4 -->
       <div @click="goToGameBoard('3x4')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
-        <div class="w-12 h-12 mx-auto bg-black"></div>
+         <img src="/3x4.png" alt="Card Back" class="w-12 h-12 mx-auto">
         <h2 class="text-2xl font-bold mt-4">3x4</h2>
       </div>
 
       <!-- 4x4 -->
       <div @click="goToGameBoard('4x4')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
-        <div class="w-12 h-12 mx-auto bg-black"></div>
+        <img src="/4x4.png" alt="Card Back" class="w-12 h-12 mx-auto">
         <h2 class="text-2xl font-bold mt-4">4x4</h2>
       </div>
 
       <!-- 6x6 -->
       <div @click="goToGameBoard('6x6')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
-        <div class="w-12 h-12 mx-auto bg-black"></div>
+        <img src="/6x6.png" alt="Card Back" class="w-12 h-12 mx-auto">
         <h2 class="text-2xl font-bold mt-4">6x6</h2>
       </div>
     </div>

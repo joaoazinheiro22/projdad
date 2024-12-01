@@ -35,6 +35,12 @@ export const useAuthStore = defineStore('auth', () => {
     return (firstName + ' ' + lastName).trim()
   })
 
+  const userFirstName = computed(() => {
+    const names = userName.value.trim().split(' ')
+    const firstName = names[0] ?? ''
+    return firstName
+  })
+
   const userEmail = computed(() => {
     return user.value ? user.value.email : ''
   })
@@ -157,6 +163,7 @@ export const useAuthStore = defineStore('auth', () => {
     userName,
     userId,
     userFirstLastName,
+    userFirstName,
     userEmail,
     userType,
     userGender,
