@@ -4,6 +4,8 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\GameResource;
+use App\Models\Game;
 
 class GameController extends Controller
 {
@@ -12,7 +14,15 @@ class GameController extends Controller
      */
     public function index()
     {
-        //
+        return GameResource::collection(Project::get());
+    }
+    
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        return new GameResource($id);
     }
 
     /**
@@ -28,17 +38,11 @@ class GameController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $game = Game::create($request->validated());
+        return new GameResource($game);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
+    
     /**
      * Show the form for editing the specified resource.
      */
