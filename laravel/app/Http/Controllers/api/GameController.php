@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreGameRequest;
+use App\Http\Requests\UpdateGameRequest;
 use Illuminate\Http\Request;
 use App\Http\Resources\GameResource;
 use App\Models\Game;
+use Illuminate\Support\Facades\Auth;
+
 
 class GameController extends Controller
 {
@@ -14,56 +18,57 @@ class GameController extends Controller
      */
     public function index()
     {
-        return GameResource::collection(Project::get());
-    }
-    
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        return new GameResource($id);
+        return GameResource::collection(Game::paginate(50)); // se fizer Game::get() não aguenta
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function getUserGameHistory()
     {
-        //
+        $user = Auth::user();
+
+        $games = Game::where('created_user_id', $user->id)
+            ->orWhereHas('multiplayer_players', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['board', 'creator', 'winner', 'multiplayer_players'])
+            ->orderBy('began_at', 'desc')
+            ->get();
+
+        return GameResource::collection($games);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGameRequest $request)
     {
         $game = Game::create($request->validated());
         return new GameResource($game);
     }
 
-    
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified resource.
      */
-    public function edit(string $id)
+    public function show(Game $game)
     {
-        //
+        return new GameResource($game);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateGameRequest $request, Game $game)
     {
-        //
+        $game->fill($request->validated());
+        $game->save();
+        return new GameResource($game);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Game $game)
     {
-        //
+        $game->delete();
+        return response()->json(null, 204);
     }
 }
