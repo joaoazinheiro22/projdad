@@ -36,6 +36,7 @@ class AuthController extends Controller
             'nickname' => $validatedData['nickname'],
             'password' => Hash::make($validatedData['password']),
             'photo' => $validatedData['photo'] ?? null,
+            'brain_coins_balance' => 10,
         ]);
 
         $token = $user->createToken('authToken', ['*'], now()->addHours(2))->plainTextToken;

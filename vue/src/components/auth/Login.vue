@@ -22,6 +22,7 @@ const errorMessage = ref('')
 const successMessage = ref('')
 
 const login = async () => {
+
     await authStore.login(credentials.value)
     router.push('/')
 }

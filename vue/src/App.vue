@@ -3,7 +3,6 @@ import { useTemplateRef, provide } from 'vue';
 import Toaster from './components/ui/toast/Toaster.vue';
 import { useAuthStore } from '@/stores/auth';
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
-
 import router from './router';
 
 const authStore = useAuthStore()
