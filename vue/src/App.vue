@@ -33,6 +33,10 @@ const logout = async () => {
           </div>
           <div class="flex items-center space-x-4">
             <div v-if="authStore.user" class="flex items-center space-x-2">
+              <div class="flex items-center space-x-1 text-gray-900">
+                <img src="@/assets/brain-coins-logo.png" alt="Brain Coins Logo" class="w-12 h-12">
+                <span>{{ authStore.userBrainCoinsBalance }}</span>
+              </div>
               <RouterLink :to="`/profile/${authStore.userId}`"
                 class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 active-class="text-blue-600 font-semibold">

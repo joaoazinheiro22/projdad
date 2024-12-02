@@ -53,6 +53,10 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value ? user.value.gender : ''
   })
 
+  const userBrainCoinsBalance = computed(() => {
+    return user.value ? user.value.brain_coins_balance : 0
+  })
+
   const userPhotoUrl = computed(() => {
     const photoFile = user.value ? (user.value.photoFileName ?? '') : ''
     if (photoFile) {
@@ -122,6 +126,24 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const removeAccount = async (password) => {
+    storeError.resetMessages()
+    try {
+      await axios.delete('auth/delete-account', { data: { password } })
+      clearUser()
+      return true
+    } catch (e) {
+      storeError.setErrorMessages(
+        e.response.data.message,
+        [],
+        e.response.status,
+        'Failed to remove account'
+      )
+      return false
+    }
+  }
+
+
   let intervalToRefreshToken = null
 
   const resetIntervalToRefreshToken = () => {
@@ -168,8 +190,10 @@ export const useAuthStore = defineStore('auth', () => {
     userType,
     userGender,
     userPhotoUrl,
+    userBrainCoinsBalance,
     login,
     logout,
-    register
+    register,
+    removeAccount
   }
 })

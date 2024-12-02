@@ -1732,3 +1732,50 @@
 #60 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('...')
 #61 {main}
 "} 
+[2024-12-02 14:45:08] local.ERROR: Command "migrate:freshh" is not defined.
+
+Did you mean one of these?
+    migrate
+    migrate:fresh
+    migrate:install
+    migrate:refresh
+    migrate:reset
+    migrate:rollback
+    migrate:status {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"migrate:freshh\" is not defined.
+
+Did you mean one of these?
+    migrate
+    migrate:fresh
+    migrate:install
+    migrate:refresh
+    migrate:reset
+    migrate:rollback
+    migrate:status at /var/www/html/vendor/symfony/console/Application.php:702)
+[stacktrace]
+#0 /var/www/html/vendor/symfony/console/Application.php(258): Symfony\\Component\\Console\\Application->find()
+#1 /var/www/html/vendor/symfony/console/Application.php(167): Symfony\\Component\\Console\\Application->doRun()
+#2 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(197): Symfony\\Component\\Console\\Application->run()
+#3 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1203): Illuminate\\Foundation\\Console\\Kernel->handle()
+#4 /var/www/html/artisan(13): Illuminate\\Foundation\\Application->handleCommand()
+#5 {main}
+"} 
+[2024-12-02 17:40:53] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":506,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at /var/www/html/app/Http/Requests/DeleteAccountRequest.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-12-02 17:41:41] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":506,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at /var/www/html/app/Http/Requests/DeleteAccountRequest.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-12-02 17:59:06] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":506,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at /var/www/html/app/Http/Requests/DeleteAccountRequest.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-12-02 18:01:36] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":506,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at /var/www/html/app/Http/Requests/DeleteAccountRequest.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-12-02 18:55:41] local.ERROR: Namespace declaration statement has to be the very first statement or after any declare call in the script {"userId":506,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Namespace declaration statement has to be the very first statement or after any declare call in the script at /var/www/html/app/Http/Requests/DeleteAccountRequest.php:5)
+[stacktrace]
+#0 {main}
+"} 

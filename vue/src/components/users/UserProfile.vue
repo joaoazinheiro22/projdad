@@ -1,15 +1,24 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, provide, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useErrorStore } from '@/stores/error'
 import { Button } from '@/components/ui/button'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+import GlobalInputDialog from '@/components/common/GlobalInputDialog.vue'
 import { useGameStore } from '@/stores/game'
-import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const authStore = useAuthStore()
 const errorStore = useErrorStore()
 const gameStore = useGameStore()
+
+const alertDialog = ref(null)
+provide('alertDialog', alertDialog)
+
+const inputDialog = ref(null)
+provide('inputDialog', inputDialog)
 
 const userProfile = ref({
     email: authStore.userEmail,
@@ -23,17 +32,40 @@ const currentPage = ref(1)
 const itemsPerPage = 10
 
 const updateProfile = async () => {
-    // Implementar a lógica para atualizar o user
+    // Implement the logic to update the user
 }
 
-const removeAccount = async () => {
-    // Implementar a lógica para remover a conta
+/*
+const removeAccount = () => {
+
+    inputDialog.value.open(
+        removeAccountConfirmed,
+        'Remove Account Confirmation',
+        'Are you sure you want to permanently delete your account?',
+        'Enter Password',
+        '',
+        'Cancel',
+        'Remove Account'
+    )
+
+}
+*/
+
+const removeAccount = async (password) => {
+    const success = await authStore.removeAccount({ password })
+    if (success) {
+        router.push('/')
+    } else {
+        if (alertDialog.value) {
+            alertDialog.value.open('Failed to remove account')
+        }
+    }
 }
 
 const fetchGameHistory = async () => {
-    await gameStore.fetchGameHistory();
-    console.log('Fetched game history:', gameStore.gameHistory);
-};
+    await gameStore.fetchGameHistory()
+    console.log('Fetched game history:', gameStore.gameHistory)
+}
 
 // Computed property to get paginated game history
 const paginatedGameHistory = computed(() => {
@@ -62,8 +94,8 @@ const prevPage = () => {
 }
 
 onMounted(async () => {
-    await fetchGameHistory();
-});
+    await fetchGameHistory()
+})
 </script>
 
 <template>

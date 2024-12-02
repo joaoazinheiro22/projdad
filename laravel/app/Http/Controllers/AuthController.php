@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DeleteAccountRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
@@ -66,6 +67,22 @@ class AuthController extends Controller
         }
     }
 
+
+    public function deleteAccount(DeleteAccountRequest $request)
+    {
+        $user = Auth::user();
+
+        // Check if the provided password matches the user's current password
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Incorrect password'], 403);
+        }
+
+        // Delete the user's account
+        $user->delete();
+
+        return response()->json(['message' => 'Account deleted successfully'], 200);
+    }
+
     public function refreshToken(Request $request)
     {
         // Revokes current token and creates a new token
@@ -94,8 +111,8 @@ class AuthController extends Controller
         $user->update($validatedData);
 
         return response()->json(['user' => $user], 200);
-   }
-/*
+    }
+    /*
     public function deleteUser()
     {
         $user = Auth::user();
