@@ -13,7 +13,7 @@ const gameStore = useGameStore()
 
 const userProfile = ref({
     email: authStore.userEmail,
-    nickname: authStore.user.nickname,
+    nickname: authStore.user ? authStore.user.nickname : '',
     name: authStore.userName,
     photo: null,
     password: ''
