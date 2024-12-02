@@ -1,20 +1,36 @@
 <script setup>
+import { useTemplateRef, provide } from 'vue';
 import Toaster from './components/ui/toast/Toaster.vue';
 import { useAuthStore } from '@/stores/auth';
+import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+
 import router from './router';
 
 const authStore = useAuthStore()
 
-const logout = async () => {
-  await authStore.logout()
-  router.push('/')
-};
+// const logout = async () => {
+//   await authStore.logout()
+//   router.push('/')
+// };
 
+const alertDialog = useTemplateRef('alert-dialog')
+provide('alertDialog', alertDialog)
+
+const logoutConfirmed = () => {
+  authStore.logout()
+}
+const logout = () => {
+  alertDialog.value.open(logoutConfirmed,
+    'Logout confirmation?', 'Cancel', `Yes, I want to log out`,
+    `Are you sure you want to log out? You can still access your account later with
+your credentials.`)
+}
 
 </script>
 
 <template>
   <Toaster />
+  <GlobalAlertDialog ref="alert-dialog"></GlobalAlertDialog>
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
