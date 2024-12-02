@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'type' => $this->type,
-            'photo_filename' => $this->photo_filename, // ? '/public/storage' . $this->photo_filename : null,
+            'photo_filename' => $this->photo_filename ? '/public/storage' . $this->photo_filename : null,
         ];
     }
 }
