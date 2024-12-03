@@ -3,30 +3,41 @@ import { defineStore } from 'pinia'
 import { useToast } from '@/components/ui/toast/use-toast'
 
 export const useErrorStore = defineStore('error', () => {
+  
   const { toast } = useToast()
+  const errors = ref({})
 
+  
   const _message = ref('')
   const _fieldErrorMessages = ref([])
   const _statusCode = ref(0)
   const _title = ref('')
-
+  
   const message = computed(() => {
     return _message.value.trim()
   })
-
+  
   const statusCode = computed(() => {
     return _statusCode.value
   })
-
+  
   const title = computed(() => {
     return _title.value.trim()
   })
+  
+  const setErrors = (newErrors) => {
+    errors.value = newErrors
+  }
 
+  const clearErrors = () => {
+    errors.value = {}
+  }
+  
   const fieldMessage = (fieldName) => {
     const errorsOfField = _fieldErrorMessages.value ? _fieldErrorMessages.value[fieldName] : ''
     return errorsOfField ? errorsOfField[0] : ''
   }
-
+  
   const resetMessages = () => {
     _message.value = ''
     _fieldErrorMessages.value = []
@@ -62,6 +73,8 @@ export const useErrorStore = defineStore('error', () => {
       description: toastMessage,
       variant: 'destructive'
     })
+
+    
   }
   return {
     message,
@@ -69,6 +82,9 @@ export const useErrorStore = defineStore('error', () => {
     title,
     fieldMessage,
     resetMessages,
-    setErrorMessages
+    setErrorMessages,
+    setErrors,
+    clearErrors,
+    errors
   }
 })

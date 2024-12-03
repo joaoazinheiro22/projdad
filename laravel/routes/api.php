@@ -36,4 +36,6 @@ Route::post('/auth/register', [AuthController::class, "register"]);
     DELETE /games/{game}-> destroy
 */
 Route::get('/games', [GameController::class, 'index']);
+Route::get('/users', [UserController::class, 'index'])
+ ->can('viewAny', user::class);
 Route::get('/games/{game}', [GameController::class, 'show']);

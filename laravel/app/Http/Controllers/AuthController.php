@@ -30,6 +30,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $validatedData = $request->validated();
+
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],

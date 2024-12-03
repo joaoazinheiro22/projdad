@@ -24,7 +24,7 @@ const authStore = useAuthStore();
 </script>
 
 <template>
-  <div class="bg-blue-500 h-128 flex flex-col items-center space-y-12 py-12">
+  <div v-if="authStore.user" class="bg-blue-500 h-128 flex flex-col items-center space-y-12 py-12">
 
     <!-- Header Section -->
     <div class="text-center text-white">
@@ -35,7 +35,7 @@ const authStore = useAuthStore();
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 px-4 max-w-5xl">
       <!-- 3x4 -->
       <div @click="goToGameBoard('3x4')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
-         <img src="/3x4.png" alt="Card Back" class="w-12 h-12 mx-auto">
+        <img src="/3x4.png" alt="Card Back" class="w-12 h-12 mx-auto">
         <h2 class="text-2xl font-bold mt-4">3x4</h2>
       </div>
 
@@ -53,19 +53,37 @@ const authStore = useAuthStore();
     </div>
 
     <!-- Footer Section -->
-    <div v-if="!authStore.user" class="text-center text-white">
-      <p @click="goToLogin" class="underline cursor-pointer hover:text-gray-200">
-        Login to see your history
-      </p>
-    </div>
-    <div v-else class="text-center text-white">
+    <div class="text-center text-white">
       <p @click="goToUserProfile" class="underline cursor-pointer hover:text-gray-200">
         See my history
       </p>
     </div>
 
-    <!-- More Games Section -->
   </div>
+  <div v-else class="bg-blue-500 h-128 flex flex-col items-center space-y-12 py-12">
+    <div class="text-center text-white">
+      <h1 class="text-4xl font-bold">Memory Game</h1>
+    </div>
+
+    <!-- Center the single card -->
+    <div class="flex justify-center items-center w-full max-w-5xl">
+      <!-- 3x4 -->
+      <div @click="goToGameBoard('3x4')" class="bg-white shadow-md rounded-md p-6 text-center cursor-pointer">
+        <img src="/3x4.png" alt="Card Back" class="w-12 h-12 mx-auto">
+        <h2 class="text-2xl font-bold mt-4">3x4</h2>
+      </div>
+    </div>
+
+    <div class="text-center text-white">
+      <p @click="goToLogin" class="underline cursor-pointer hover:text-gray-200">
+        Login to see your history and more game modes
+      </p>
+    </div>
+  </div>
+
+
+
+  <!-- More Games Section -->
   <div class="bg-white w-full py-12">
     <div class="max-w-5xl mx-auto px-4 text-center">
       <h2 class="text-2xl font-bold mb-8">More Info Here</h2>

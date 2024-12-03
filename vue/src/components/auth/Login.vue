@@ -22,11 +22,27 @@ const errorMessage = ref('')
 const successMessage = ref('')
 
 const login = async () => {
+    // Clear previous error messages
+    errorMessage.value = ''
+    
+    // Validate email and password
+    if (!credentials.value.email || !credentials.value.password) {
+        errorMessage.value = 'Please provide both email and password'
+        return
+    }
 
-    await authStore.login(credentials.value)
-    router.push('/')
+    try {
+        const result = await authStore.login(credentials.value)
+        
+        // Only navigate to root if login is successful
+        if (result) {
+            router.push('/')
+        }
+    } catch (error) {
+        // Handle any login errors
+        errorMessage.value = error.message || 'Login failed'
+    }
 }
-
 </script>
 
 <template>

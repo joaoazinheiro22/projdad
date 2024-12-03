@@ -9,18 +9,8 @@ export const useGameStore = defineStore('game', () => {
     const games = ref([])
 
     const fetchGameHistory = async () => {
-        try {
-            const response = await axios.get('games/history')
-            gameHistory.value = response.data.data // Adjusted to access the data property
-        } catch (error) {
-            console.error('Failed to fetch game history:', error)
-            storeError.setErrorMessages(
-                error.response.data.message,
-                error.response.data.errors,
-                error.response.status,
-                'Failed to fetch game history'
-            )
-        }
+        const response = await axios.get('games/history')
+        gameHistory.value = response.data.data // Adjusted to access the data property
     }
 
     const getGames = async () => {

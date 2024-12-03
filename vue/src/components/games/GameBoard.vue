@@ -212,7 +212,7 @@ onMounted(() => {
     <!-- Win Modal -->
     <div v-if="isGameWon" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div class="bg-white p-8 rounded-lg text-center shadow-xl">
-        <h2 class="text-2xl font-bold mb-4">Congratulations {{ authStore.userFirstName }}!</h2>
+        <h2 class="text-2xl font-bold mb-4">Congratulations {{ authStore.userFirstLastName }}!</h2>
         <p class="mb-2">You've won the game in {{ formattedTime }}!</p>
         <p class="mb-4">Number of turns: {{ turnCount }}</p>
         <button @click="restartGame" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition mr-2">

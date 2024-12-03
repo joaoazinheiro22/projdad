@@ -6,6 +6,8 @@ import GameBoard from '@/components/games/GameBoard.vue'
 import Register from '@/components/auth/Register.vue'
 import UserProfile from '@/components/users/UserProfile.vue'
 import Games from '@/components/games/Games.vue'
+import Users from '@/components/users/Users.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +16,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeComponent
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: Users
     },
     {
       path:"/games",
@@ -51,6 +58,19 @@ const router = createRouter({
       ]
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  
+  if (to.name === 'users') {
+    if (!authStore.user || authStore.user.type !== 'A') {
+      next('/login') // Redirect non-admin users
+      return
+    }
+  }
+  
+  next()
 })
 
 export default router

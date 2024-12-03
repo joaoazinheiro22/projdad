@@ -1,0 +1,158 @@
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia'
+import axios from 'axios'
+import { useErrorStore } from '@/stores/error'
+import { useRouter } from 'vue-router'
+import { useToast } from '@/components/ui/toast/use-toast'
+import { ToastAction } from '@/components/ui/toast'
+import { h } from 'vue'
+
+export const useUserStore = defineStore('user', () => {
+    const router = useRouter()
+    const { toast } = useToast()
+    const storeError = useErrorStore()
+
+    const users = ref([])
+    const filterByType = ref(null)
+    const filterByBlocked = ref(null)
+    
+    const totalUsers = computed(() => {
+        return users.value ? users.value.length : 0
+    })
+
+    const totalFilteredUsers = computed(() => {
+        return filteredUsers.value ? filteredUsers.value.length : 0
+    })
+
+    // Private helper function for filtering users
+    const userInFilter = (user) => {
+        if (filterByBlocked.value !== null) {
+            if (filterByBlocked.value !== user.blocked) {
+                return false
+            }
+        }
+        if (filterByType.value) {
+            if (filterByType.value !== user.type) {
+                return false
+            }
+        }
+        return true
+    }
+
+    const filteredUsers = computed(() => users.value.filter(userInFilter))
+
+    const filterDescription = computed(() => {
+        if (!filterByBlocked.value && !filterByType.value) {
+            return 'All users'
+        }
+        let description = 'Users'
+        if (filterByBlocked.value !== null) {
+            description += filterByBlocked.value ? ' that are blocked' : ' that are not blocked'
+        }
+        if (filterByType.value) {
+            description += ` of type ${filterByType.value}`
+        }
+        return description
+    })
+
+    const fetchUsers = async () => {
+        storeError.resetMessages()
+        const response = await axios.get('users')
+        users.value = response.data.data
+    }
+
+    const getIndexOfUser = (userId) => {
+        return users.value.findIndex((u) => u.id === userId)
+    }
+
+    const fetchUser = async (userId) => {
+        storeError.resetMessages()
+        const response = await axios.get('users/' + userId)
+        const index = getIndexOfUser(userId)
+        if (index > -1) {
+            users.value[index] = Object.assign({}, response.data.data)
+        }
+        return response.data.data
+    }
+
+    const insertUser = async (user) => {
+        storeError.resetMessages()
+        try {
+            const response = await axios.post('users', user)
+            users.value.push(response.data.data)
+            toast({
+                description: `User #${response.data.data.id} was created!`,
+                action: h(ToastAction, {
+                    altText: `Open new user`,
+                    onclick: () => {
+                        router.push({ name: 'updateUser', 
+                                      params: {id: response.data.data.id} })
+                    }
+                }, {
+                    default: () => `Open new user`,
+                })
+            })
+            return response.data.data
+        } catch (e) {
+            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error inserting user!')
+            return false
+        }
+    }
+
+    const updateUser = async (user) => {
+        storeError.resetMessages()
+        try {
+            const response = await axios.put('users/' + user.id, user)
+            const index = getIndexOfUser(user.id)
+            if (index > -1) {
+                users.value[index] = Object.assign({}, response.data.data)
+            }
+            toast({
+                description: 'User has been updated correctly!',
+            })
+            return response.data.data
+        } catch (e) {
+            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating user!')
+            return false
+        }
+    }
+
+    const toggleBlockedUser = async (user) => {
+        let requestBody = {
+            blocked: !user.blocked
+        }
+        storeError.resetMessages()
+        try {
+            const response = await axios.patch('users/' + user.id + '/blocked', requestBody)
+            const index = getIndexOfUser(user.id)
+            if (index > -1) {
+                users.value[index] = Object.assign({}, response.data.data)
+            }
+            return response.data.data
+        } catch (e) {
+            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error toggling user blocked status!')
+            return false
+        }
+    }
+
+    const deleteUser = async (user) => {
+        storeError.resetMessages()
+        try {
+            await axios.delete('users/' + user.id)
+            const index = getIndexOfUser(user.id)
+            if (index > -1) {
+                users.value.splice(index, 1)
+            }
+            return true
+        } catch (e) {
+            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error deleting user!')
+            return false
+        }
+    }
+
+    return {
+        users, totalUsers, totalFilteredUsers, filteredUsers,
+        filterDescription, filterByType, filterByBlocked,
+        fetchUsers, fetchUser, insertUser, updateUser, deleteUser, toggleBlockedUser
+    }
+})
