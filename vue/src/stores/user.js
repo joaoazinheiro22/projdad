@@ -15,6 +15,21 @@ export const useUserStore = defineStore('user', () => {
     const users = ref([])
     const filterByType = ref(null)
     const filterByBlocked = ref(null)
+
+    const getUsers = async () => {
+        try {
+            const response = await axios.get('users')
+            users.value = response.data.data // Storing the list of users
+        } catch (error) {
+            console.error('Failed to fetch users:', error)
+            storeError.setErrorMessages(
+                error.response.data.message,
+                error.response.data.errors,
+                error.response.status,
+                'Failed to fetch users'
+            )
+        }
+    }
     
     const totalUsers = computed(() => {
         return users.value ? users.value.length : 0
@@ -151,7 +166,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     return {
-        users, totalUsers, totalFilteredUsers, filteredUsers,
+        users, getUsers, totalUsers, totalFilteredUsers, filteredUsers,
         filterDescription, filterByType, filterByBlocked,
         fetchUsers, fetchUser, insertUser, updateUser, deleteUser, toggleBlockedUser
     }

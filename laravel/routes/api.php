@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\GameController;
+use App\Http\Controllers\api\UserController;
 
 
 
@@ -21,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/games', [GameController::class, 'store']);
     Route::put('/games/{game}', [GameController::class, 'update']);
     Route::delete('/games/{game}', [GameController::class, 'destroy']);
+    Route::get('/users', [UserController::class, 'index']);
 });
 
 Route::post('/auth/login', [AuthController::class, "login"]);
@@ -36,6 +38,6 @@ Route::post('/auth/register', [AuthController::class, "register"]);
     DELETE /games/{game}-> destroy
 */
 Route::get('/games', [GameController::class, 'index']);
-Route::get('/users', [UserController::class, 'index'])
- ->can('viewAny', user::class);
+// Route::get('/users', [UserController::class, 'index'])
+//  ->can('viewAny', user::class);
 Route::get('/games/{game}', [GameController::class, 'show']);

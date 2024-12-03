@@ -63,12 +63,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   
-  if (to.name === 'users') {
-    if (!authStore.user || authStore.user.type !== 'A') {
-      next('/login') // Redirect non-admin users
-      return
-    }
-  }
+  // if (to.name === 'users') {
+  //   if (!authStore.user || authStore.user.type !== 'A') {
+  //     next('/login') // Redirect non-admin users
+  //     return
+  //   }
+  // }
   
   next()
 })

@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $queryParameters = $request->validated();
+        $queryParameters = $request->all();
         $users = User::query();
 
         if (array_key_exists('type', $queryParameters)) {
