@@ -4,7 +4,30 @@
     <div v-if="isAdmin" class="mb-8">
       <h2 class="text-2xl font-semibold mb-4">Admin Statistics</h2>
       <div class="bg-white p-4 rounded-lg shadow-md">
-        <p class="text-lg">Total Purchases: <span class="font-semibold">{{ adminStats.totalPurchases }}</span></p>
+        <table class="min-w-full bg-white border border-gray-300 mb-4">
+          <thead>
+            <tr>
+              <th class="py-2 border-b">Statistic</th>
+              <th class="py-2 border-b">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="py-2 border-b">Total Purchases</td>
+              <td class="py-2 border-b text-center">{{ adminStats.totalPurchases }}</td>
+            </tr>
+            <tr>
+              <td class="py-2 border-b">Blocked Users</td>
+              <td class="py-2 border-b text-center">{{ adminStats.blockedUsers }}</td>
+            </tr>
+            <tr>
+              <td class="py-2 border-b">Last Month Revenue</td>
+              <td class="py-2 border-b text-center">{{ adminStats.lastMonthRevenue }}</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-md mt-8">
         <h3 class="text-xl font-semibold mt-4 mb-2">Purchases by Player</h3>
         <StatisticsChart :chartData="adminChartData" />
       </div>
@@ -39,10 +62,6 @@
             <tr>
               <td class="py-2 border-b">Average Game Duration</td>
               <td class="py-2 border-b text-center">{{ genericStats.averageGameDuration }} seconds</td>
-            </tr>
-            <tr>
-              <td class="py-2 border-b">Total Revenue</td>
-              <td class="py-2 border-b text-center">{{ genericStats.totalRevenue }} euros</td>
             </tr>
           </tbody>
         </table>
@@ -136,9 +155,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.container {
-  max-width: 1200px;
-}
-</style>

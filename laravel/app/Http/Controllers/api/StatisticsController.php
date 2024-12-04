@@ -20,7 +20,7 @@ class StatisticsController extends Controller
             $gamesLastWeek = Game::where('created_at', '>=', Carbon::now()->subWeek())->count();
             $gamesLastMonth = Game::where('created_at', '>=', Carbon::now()->subMonth())->count();
             $averageGameDuration = Game::whereNotNull('total_time')->avg('total_time');
-            $totalRevenue = Transaction::where('type', 'P')->sum('euros');
+            
             $topPlayersByWins = Game::select('users.name', DB::raw('COUNT(games.winner_user_id) as wins'))
                 ->join('users', 'games.winner_user_id', '=', 'users.id')
                 ->whereNotNull('games.winner_user_id')
@@ -36,7 +36,6 @@ class StatisticsController extends Controller
                 'gamesLastWeek' => $gamesLastWeek,
                 'gamesLastMonth' => $gamesLastMonth,
                 'averageGameDuration' => $averageGameDuration,
-                'totalRevenue' => $totalRevenue,
                 'topPlayersByWins' => $topPlayersByWins,
                 
             ]);
@@ -49,19 +48,35 @@ class StatisticsController extends Controller
     }
 
     public function getAdminStats()
-    {
-        try{
+{
+    try {
         $totalPurchases = Transaction::where('type', 'P')->sum('euros');
         $purchasesByPlayer = Transaction::where('type', 'P')
             ->select('user_id', DB::raw('SUM(euros) as total'))
             ->groupBy('user_id')
             ->get();
+        $blockedUsers = User::where('blocked', 1)->count();
+        $totalRevenue = Transaction::where('type', 'P')->sum('euros');
+        $lastMonthRevenue = Transaction::where('type', 'P')
+            ->whereYear('transaction_datetime', Carbon::now()->subMonth()->year)
+            ->whereMonth('transaction_datetime', Carbon::now()->subMonth()->month)
+            ->sum('euros');
+        $topSpendingUsers = Transaction::where('type', 'P')
+            ->select('user_id', DB::raw('SUM(euros) as total'))
+            ->groupBy('user_id')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
 
         return response()->json([
             'totalPurchases' => $totalPurchases,
             'purchasesByPlayer' => $purchasesByPlayer,
+            'blockedUsers' => $blockedUsers,
+            'totalRevenue' => $totalRevenue,
+            'lastMonthRevenue' => $lastMonthRevenue,
+            'topSpendingUsers' => $topSpendingUsers,
         ]);
-    }catch (\Exception $e) {
+    } catch (\Exception $e) {
         return response()->json([
             'error' => 'An error occurred while fetching the admin stats',
             'message' => $e->getMessage(),
