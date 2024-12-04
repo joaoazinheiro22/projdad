@@ -1,15 +1,69 @@
 <template>
-  <div>
-    <h1>Statistics</h1>
-    <div v-if="isAdmin">
-      <h2>Admin Statistics</h2>
-      <p>Total Purchases: {{ adminStats.totalPurchases }}</p>
-      <h3>Purchases by Player</h3>
-      <StatisticsChart :chartData="adminChartData" />
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold mb-6">Statistics</h1>
+    <div v-if="isAdmin" class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Admin Statistics</h2>
+      <div class="bg-white p-4 rounded-lg shadow-md">
+        <p class="text-lg">Total Purchases: <span class="font-semibold">{{ adminStats.totalPurchases }}</span></p>
+        <h3 class="text-xl font-semibold mt-4 mb-2">Purchases by Player</h3>
+        <StatisticsChart :chartData="adminChartData" />
+      </div>
     </div>
     <div>
-      <h2>Generic Statistics</h2>
-      <StatisticsChart :chartData="genericChartData" />
+      <h2 class="text-2xl font-semibold mb-4">Generic Statistics</h2>
+      <div class="bg-white p-4 rounded-lg shadow-md mb-8">
+        <table class="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr>
+              <th class="py-2 border-b">Statistic</th>
+              <th class="py-2 border-b">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="py-2 border-b">Total Players</td>
+              <td class="py-2 border-b text-center">{{ genericStats.totalPlayers }}</td>
+            </tr>
+            <tr>
+              <td class="py-2 border-b">Total Games</td>
+              <td class="py-2 border-b text-center">{{ genericStats.totalGames }}</td>
+            </tr>
+            <tr>
+              <td class="py-2 border-b">Games Last Week</td>
+              <td class="py-2 border-b text-center">{{ genericStats.gamesLastWeek }}</td>
+            </tr>
+            <tr>
+              <td class="py-2 border-b">Games Last Month</td>
+              <td class="py-2 border-b text-center">{{ genericStats.gamesLastMonth }}</td>
+            </tr>
+            <tr>
+              <td class="py-2 border-b">Average Game Duration</td>
+              <td class="py-2 border-b text-center">{{ genericStats.averageGameDuration }} seconds</td>
+            </tr>
+            <tr>
+              <td class="py-2 border-b">Total Revenue</td>
+              <td class="py-2 border-b text-center">{{ genericStats.totalRevenue }} euros</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold mb-4">Top Players by Wins</h3>
+        <table class="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr>
+              <th class="py-2 border-b">User Name</th>
+              <th class="py-2 border-b">Wins</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="player in genericStats.topPlayersByWins" :key="player.name">
+              <td class="py-2 border-b text-center">{{ player.name }}</td>
+              <td class="py-2 border-b text-center">{{ player.wins }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -51,22 +105,6 @@ export default {
       }
     };
 
-    const genericChartData = computed(() => ({
-      labels: ['Total Players', 'Total Games', 'Games Last Week', 'Games Last Month'],
-      datasets: [
-        {
-          label: 'Generic Statistics',
-          backgroundColor: '#42A5F5',
-          data: [
-            genericStats.value.totalPlayers,
-            genericStats.value.totalGames,
-            genericStats.value.gamesLastWeek,
-            genericStats.value.gamesLastMonth
-          ]
-        }
-      ]
-    }));
-
     const adminChartData = computed(() => {
       const purchasesByPlayer = adminStats.value.purchasesByPlayer || [];
       return {
@@ -92,7 +130,6 @@ export default {
       isAdmin,
       genericStats,
       adminStats,
-      genericChartData,
       adminChartData,
       errorMessage
     };
@@ -101,5 +138,7 @@ export default {
 </script>
 
 <style scoped>
-/* Add any styles you need for your statistics page */
+.container {
+  max-width: 1200px;
+}
 </style>

@@ -14,18 +14,32 @@ class StatisticsController extends Controller
 {
     public function getGenericStats()
     {
-        try{
-        $totalPlayers = User::count();
-        $totalGames = Game::count();
-        $gamesLastWeek = Game::where('created_at', '>=', Carbon::now()->subWeek())->count();
-        $gamesLastMonth = Game::where('created_at', '>=', Carbon::now()->subMonth())->count();
+        try {
+            $totalPlayers = User::count();
+            $totalGames = Game::count();
+            $gamesLastWeek = Game::where('created_at', '>=', Carbon::now()->subWeek())->count();
+            $gamesLastMonth = Game::where('created_at', '>=', Carbon::now()->subMonth())->count();
+            $averageGameDuration = Game::whereNotNull('total_time')->avg('total_time');
+            $totalRevenue = Transaction::where('type', 'P')->sum('euros');
+            $topPlayersByWins = Game::select('users.name', DB::raw('COUNT(games.winner_user_id) as wins'))
+                ->join('users', 'games.winner_user_id', '=', 'users.id')
+                ->whereNotNull('games.winner_user_id')
+                ->groupBy('users.name')
+                ->orderByDesc('wins')
+                ->limit(5)
+                ->get();
+            
 
-        return response()->json([
-            'totalPlayers' => $totalPlayers,
-            'totalGames' => $totalGames,
-            'gamesLastWeek' => $gamesLastWeek,
-            'gamesLastMonth' => $gamesLastMonth,
-        ]);
+            return response()->json([
+                'totalPlayers' => $totalPlayers,
+                'totalGames' => $totalGames,
+                'gamesLastWeek' => $gamesLastWeek,
+                'gamesLastMonth' => $gamesLastMonth,
+                'averageGameDuration' => $averageGameDuration,
+                'totalRevenue' => $totalRevenue,
+                'topPlayersByWins' => $topPlayersByWins,
+                
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred while fetching the generic stats',
