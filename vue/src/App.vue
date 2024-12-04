@@ -44,7 +44,7 @@ const toggleDropdown = () => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav class="flex items-center justify-between h-16">
           <div class="flex items-center space-x-8">
-            <RouterLink to="/"
+            <RouterLink v-if="!authStore.userAdmin" to="/"
               class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               active-class="text-blue-600 font-semibold">
               Home

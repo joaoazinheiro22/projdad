@@ -36,7 +36,7 @@ class AuthController extends Controller
             'email' => $validatedData['email'],
             'nickname' => $validatedData['nickname'],
             'password' => Hash::make($validatedData['password']),
-            'photo' => $validatedData['photo'] ?? null,
+            'photo_filename' => $validatedData['photo_filename'] ?? null,
             'brain_coins_balance' => 10,
         ]);
 
@@ -103,7 +103,7 @@ class AuthController extends Controller
             'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
             'nickname' => 'sometimes|string|max:255',
             'password' => 'sometimes|string|min:1',
-            'photo' => 'sometimes|nullable|string',
+            'photo_filename' => 'sometimes|nullable|string',
         ]);
 
         if (isset($validatedData['password'])) {

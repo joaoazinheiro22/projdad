@@ -83,12 +83,21 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
-  if (to.name === 'users') {
-    if (!authStore.user || authStore.user.type !== 'A') {
-      next('/login') // Redirect non-admin users
+   // Check for root route access
+   if (to.name === 'home') {
+    if (authStore.user && authStore.user.type === 'A') {
+      next('/statistics') // Redirect non-admin users
       return
     }
   }
+
+  // Existing users route protection
+  // if (to.name === 'users') {
+  //   if (!authStore.user || authStore.user.type !== 'A') {
+  //     // next('/') // Redirect non-admin users
+  //     return
+  //   }
+  // }
 
   next()
 })
