@@ -29,39 +29,11 @@ class GameController extends Controller
             ->orWhereHas('multiplayer_players', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with(['board', 'creator', 'winner', 'multiplayer_players'])
+            ->with(['board', 'created_user', 'winner_user', 'multiplayer_players'])
             ->orderBy('began_at', 'desc')
             ->get();
 
         return GameResource::collection($games);
-    }
-
-    public function getPersonalScoreboard()
-    {
-        $user = Auth::user();
-
-        // Single-player best times and minimum turns per board size
-        $singlePlayerScores = Game::where('type', 'S')
-            ->where('created_user_id', $user->id)
-            ->join('boards', 'games.board_id', '=', 'boards.id')
-            ->select('boards.board_cols', 'boards.board_rows')
-            ->selectRaw('MIN(total_time) as best_time')
-            ->selectRaw('MIN(total_turns) as min_turns')
-            ->groupBy('boards.board_cols', 'boards.board_rows')
-            ->get();
-
-        // Multiplayer total victories and losses
-        $multiplayerStats = Game::where('type', 'M')
-            ->join('multiplayer_games_played', 'games.id', '=', 'multiplayer_games_played.game_id')
-            ->where('multiplayer_games_played.user_id', $user->id)
-            ->selectRaw('SUM(multiplayer_games_played.player_won) as total_victories')
-            ->selectRaw('COUNT(*) - SUM(multiplayer_games_played.player_won) as total_losses')
-            ->first();
-
-        return response()->json([
-            'single_player_scores' => $singlePlayerScores,
-            'multiplayer_stats' => $multiplayerStats
-        ]);
     }
 
     /**

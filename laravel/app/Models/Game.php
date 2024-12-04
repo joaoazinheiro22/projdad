@@ -17,15 +17,16 @@ class Game extends Model
         'began_at',
         'ended_at',
         'total_time',
-        'board_id'
+        'board_id',
+        'total_turns_winner',
     ];
 
-    public function creator()
+    public function created_user()
     {
         return $this->belongsTo(User::class, 'created_user_id');
     }
 
-    public function winner()
+    public function winner_user()
     {
         return $this->belongsTo(User::class, 'winner_user_id');
     }

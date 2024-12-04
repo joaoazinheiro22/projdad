@@ -8,6 +8,8 @@ import UserProfile from '@/components/users/UserProfile.vue'
 import Games from '@/components/games/Games.vue'
 import Users from '@/components/users/Users.vue'
 import { useAuthStore } from '@/stores/auth'
+import GlobalScores from '@/components/scoreboard/GlobalScores.vue'
+import UsersScoreBoard from '@/components/scoreboard/UsersScoreBoard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,8 +25,21 @@ const router = createRouter({
       component: Users
     },
     {
-      path:"/games",
-      name:"games",
+      path: '/scoreboard',
+      children: [
+        {
+          path: 'global',
+          component: GlobalScores
+        },
+        {
+          path: ':id',
+          component: UsersScoreBoard
+        }
+      ]
+    },
+    {
+      path: "/games",
+      name: "games",
       component: Games
     },
     {
@@ -62,14 +77,14 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  
-  // if (to.name === 'users') {
-  //   if (!authStore.user || authStore.user.type !== 'A') {
-  //     next('/login') // Redirect non-admin users
-  //     return
-  //   }
-  // }
-  
+
+  if (to.name === 'users') {
+    if (!authStore.user || authStore.user.type !== 'A') {
+      next('/login') // Redirect non-admin users
+      return
+    }
+  }
+
   next()
 })
 
