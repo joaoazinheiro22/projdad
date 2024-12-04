@@ -92,7 +92,7 @@ const toggleDropdown = () => {
               All Users
             </button>
             <div v-if="authStore.user" class="flex items-center space-x-2">
-              <div class="flex items-center space-x-1 text-gray-900">
+              <div v-if="authStore.userType !== 'A'" class="flex items-center space-x-1 text-gray-900">
                 <img src="@/assets/brain-coins-logo.png" alt="Brain Coins Logo" class="w-12 h-12">
                 <span>{{ authStore.userBrainCoinsBalance }}</span>
               </div>
