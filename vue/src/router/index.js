@@ -10,6 +10,7 @@ import Users from '@/components/users/Users.vue'
 import { useAuthStore } from '@/stores/auth'
 import GlobalScores from '@/components/scoreboard/GlobalScores.vue'
 import UsersScoreBoard from '@/components/scoreboard/UsersScoreBoard.vue'
+import Statistics from '@/components/statistics/Statistics.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +63,10 @@ const router = createRouter({
     {
       path: '/register',
       component: Register
+    },
+    {
+      path: '/statistics',
+      component: Statistics
     },
     {
       path: '/testers',

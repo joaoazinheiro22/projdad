@@ -7,6 +7,10 @@ use App\Http\Controllers\api\GameController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\ScoreboardController;
 use App\Models\User;
+use App\Http\Controllers\api\StatisticsController;
+
+Route::get('/stats/generic', [StatisticsController::class, 'getGenericStats']);
+Route::get('/stats/admin', [StatisticsController::class, 'getAdminStats']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/me', function (Request $request) {
