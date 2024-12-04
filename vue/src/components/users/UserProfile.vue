@@ -40,6 +40,11 @@ const updateProfile = async () => {
 
 const removeAccount = async (password) => {
     console.log('Removing account...');
+    if(authStore.userType == 'A'){
+        errorStore.setErrorMessages('You cannot remove an admin account')
+        console.log('Admins cannot remove their accounts');
+        return;
+    }
     const success = await authStore.removeAccount(password);
     if (success) {
         router.push('/');
