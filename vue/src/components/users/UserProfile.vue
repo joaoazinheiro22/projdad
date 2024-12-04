@@ -5,14 +5,17 @@ import { useErrorStore } from '@/stores/error'
 import { Button } from '@/components/ui/button'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import { useGameStore } from '@/stores/game'
+import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const errorStore = useErrorStore()
 const gameStore = useGameStore()
 
 const userProfile = ref({
+    id: authStore.userId,
     email: authStore.userEmail,
     nickname: authStore.user ? authStore.user.nickname : '',
     name: authStore.userName,
@@ -24,7 +27,15 @@ const currentPage = ref(1)
 const itemsPerPage = 10
 
 const updateProfile = async () => {
-    // Implement the logic to update the user
+    try{
+        const updatedUser = await userStore.updateUser(userProfile.value)
+        if(updatedUser){
+            console.log('Profile updated:', updatedUser)
+        }
+    }catch(error){
+        console.error(error)
+    }
+
 }
 
 const removeAccount = async (password) => {
