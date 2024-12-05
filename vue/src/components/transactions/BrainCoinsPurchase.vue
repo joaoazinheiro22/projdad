@@ -1,12 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
-import { useToast } from 'vue-toastification';
 import ErrorMessage from '@/components/common/ErrorMessage.vue';
-import SuccessMessage from '@/components/common/SuccessMessage.vue';
+//import SuccessMessage from '@/components/common/SuccessMessage.vue';
 
 const transactionStore = useTransactionStore();
-const toast = useToast();
+
 
 const paymentType = ref('MBWAY');
 const paymentReference = ref('');
@@ -33,7 +32,6 @@ async function submitPurchase() {
             amount: amount.value
         });
 
-        toast.success(`Successfully purchased ${amount.value * 10} Brain Coins!`);
 
         // Reset form
         paymentReference.value = '';
@@ -52,7 +50,6 @@ async function submitPurchase() {
         <h1 class="text-3xl font-bold mb-8">Purchase Brain Coins</h1>
 
         <ErrorMessage :errorMessage="error" />
-        <SuccessMessage :successMessage="success" />
 
         <form @submit.prevent="submitPurchase" class="space-y-6">
             <div class="space-y-2">
