@@ -60,12 +60,6 @@ const toggleDropdown = () => {
               Statistics
             </RouterLink>
 
-            <RouterLink to="/purchaseBrainCoins"
-              class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              active-class="text-blue-600 font-semibold">
-              Purchase Brain Coins
-            </RouterLink>
-
             <div class="relative" @mouseenter="isGameScoresOpen = true" @mouseleave="closeDropdown">
               <button @click="toggleDropdown"
                 class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -98,9 +92,14 @@ const toggleDropdown = () => {
               All Users
             </button>
             <div v-if="authStore.user" class="flex items-center space-x-2">
-              <div v-if="authStore.userType !== 'A'" class="flex items-center space-x-1 text-gray-900">
+
+              <div v-if="authStore.userType !== 'A'" class="flex items-center space-x-2">
                 <img src="@/assets/brain-coins-logo.png" alt="Brain Coins Logo" class="w-12 h-12">
                 <span>{{ authStore.userBrainCoinsBalance }}</span>
+                <RouterLink to="/purchaseBrainCoins"
+                  class="text-gray-900 hover:text-blue-600 px-2 py-1 rounded-md text-sm font-medium transition-colors">
+                  +
+                </RouterLink>
               </div>
               <RouterLink :to="`/profile/${authStore.userId}`"
                 class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"

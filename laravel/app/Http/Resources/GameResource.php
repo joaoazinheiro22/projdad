@@ -23,7 +23,7 @@ class GameResource extends JsonResource
             'ended_at' => $this->ended_at,
             'total_time' => $this->convertSecondsToMinutesAndSeconds($this->total_time),
             'creator' => $this->created_user ? $this->created_user->nickname : null,
-            'winner' => $this->winner_user ? $this->winner_user->nickname : 'Tied',
+            'winner' => $this->winner_user ? $this->winner_user->nickname : '-',
         ];
     }
 
