@@ -7,28 +7,33 @@ use App\Http\Controllers\api\GameController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\ScoreboardController;
 use App\Models\User;
+use App\Http\Controllers\api\TransactionController;
 use App\Http\Controllers\api\StatisticsController;
 
 Route::get('/stats/generic', [StatisticsController::class, 'getGenericStats']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/me', function (Request $request) {
-        return $request->user(); 
+        return $request->user();
     });
-    
+
     Route::put('/users/{id}', [AuthController::class, 'updateUser']);
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);
     Route::post('auth/refreshtoken', [AuthController::class, 'refreshToken']);
-    
+
     Route::get('games/history', [GameController::class, 'getUserGameHistory']);
     Route::post('/games', [GameController::class, 'store']);
     Route::put('/games/{game}', [GameController::class, 'update']);
     Route::delete('/games/{game}', [GameController::class, 'destroy']);
     Route::get('/users', [UserController::class, 'index'])->can('viewAny', User::class);
-    
+
     Route::get('/scoreboard/users-stats/{id}/{cols}/{rows}', [ScoreboardController::class, 'getUserStats']);
+
     Route::get('/stats/admin', [StatisticsController::class, 'getAdminStats'])->can('viewAny', User::class);
+
+    Route::get('/transactions', [TransactionController::class, 'getTransactionHistory']);
+    Route::post('/transactions/purchase', [TransactionController::class, 'purchaseBrainCoins']);
 });
 
 Route::post('/auth/login', [AuthController::class, "login"]);

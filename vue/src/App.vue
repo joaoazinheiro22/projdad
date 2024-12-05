@@ -60,6 +60,12 @@ const toggleDropdown = () => {
               Statistics
             </RouterLink>
 
+            <RouterLink to="/purchaseBrainCoins"
+              class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              active-class="text-blue-600 font-semibold">
+              Purchase Brain Coins
+            </RouterLink>
+
             <div class="relative" @mouseenter="isGameScoresOpen = true" @mouseleave="closeDropdown">
               <button @click="toggleDropdown"
                 class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"

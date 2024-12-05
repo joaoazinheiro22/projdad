@@ -14,8 +14,7 @@ class Transaction extends Model
         'euros',
         'payment_type',
         'payment_reference',
-        'brain_coins',
-        'custom'
+        'brain_coins'
     ];
 
     protected $dates = [

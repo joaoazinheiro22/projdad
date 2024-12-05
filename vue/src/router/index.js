@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/auth'
 import GlobalScores from '@/components/scoreboard/GlobalScores.vue'
 import UsersScoreBoard from '@/components/scoreboard/UsersScoreBoard.vue'
 import Statistics from '@/components/statistics/Statistics.vue'
+import BrainCoinsPurchase from '@/components/transactions/BrainCoinsPurchase.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,11 @@ const router = createRouter({
           component: UsersScoreBoard
         }
       ]
+    },
+    {
+      path: '/purchaseBrainCoins',
+      name: 'BrainCoinsPurchase',
+      component: BrainCoinsPurchase
     },
     {
       path: "/games",

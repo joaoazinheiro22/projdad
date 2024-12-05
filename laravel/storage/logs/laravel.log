@@ -3218,3 +3218,86 @@ Did you mean one of these?
 #40 C:\\Program Files\\Herd\\resources\\app.asar.unpacked\\resources\\valet\\server.php(139): require('C:\\\\Users\\\\joaom\\\\...')
 #41 {main}
 "} 
+[2024-12-05 00:19:05] local.ERROR: Cannot declare class App\Http\Controllers\TransactionController, because the name is already in use {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot declare class App\\Http\\Controllers\\TransactionController, because the name is already in use at /var/www/html/app/Http/Controllers/api/TransactionController.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2024-12-05 00:20:07] local.ERROR: Cannot declare class App\Http\Controllers\TransactionController, because the name is already in use {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot declare class App\\Http\\Controllers\\TransactionController, because the name is already in use at /var/www/html/app/Http/Controllers/api/TransactionController.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2024-12-05 00:23:03] local.ERROR: syntax error, unexpected token "<<" {"exception":"[object] (ParseError(code: 0): syntax error, unexpected token \"<<\" at /var/www/html/routes/api.php:32)
+[stacktrace]
+#0 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(513): Illuminate\\Routing\\RouteFileRegistrar->register()
+#1 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(467): Illuminate\\Routing\\Router->loadRoutes()
+#2 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/RouteRegistrar.php(199): Illuminate\\Routing\\Router->group()
+#3 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Configuration/ApplicationBuilder.php(208): Illuminate\\Routing\\RouteRegistrar->group()
+#4 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Configuration\\ApplicationBuilder->Illuminate\\Foundation\\Configuration\\{closure}()
+#5 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#6 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(83): Illuminate\\Container\\Util::unwrapIfClosure()
+#7 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#8 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/Container.php(694): Illuminate\\Container\\BoundMethod::call()
+#9 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(162): Illuminate\\Container\\Container->call()
+#10 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Support/Providers/RouteServiceProvider.php(59): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->loadRoutes()
+#11 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider->Illuminate\\Foundation\\Support\\Providers\\{closure}()
+#12 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#13 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(83): Illuminate\\Container\\Util::unwrapIfClosure()
+#14 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#15 /var/www/html/vendor/laravel/framework/src/Illuminate/Container/Container.php(694): Illuminate\\Container\\BoundMethod::call()
+#16 /var/www/html/vendor/laravel/framework/src/Illuminate/Support/ServiceProvider.php(144): Illuminate\\Container\\Container->call()
+#17 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1124): Illuminate\\Support\\ServiceProvider->callBootedCallbacks()
+#18 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1102): Illuminate\\Foundation\\Application->bootProvider()
+#19 [internal function]: Illuminate\\Foundation\\Application->Illuminate\\Foundation\\{closure}()
+#20 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1101): array_walk()
+#21 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php(17): Illuminate\\Foundation\\Application->boot()
+#22 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(316): Illuminate\\Foundation\\Bootstrap\\BootProviders->bootstrap()
+#23 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(187): Illuminate\\Foundation\\Application->bootstrapWith()
+#24 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(171): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#25 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#26 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1190): Illuminate\\Foundation\\Http\\Kernel->handle()
+#27 /var/www/html/public/index.php(17): Illuminate\\Foundation\\Application->handleRequest()
+#28 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('...')
+#29 {main}
+"} 
+[2024-12-05 00:25:08] local.ERROR: Cannot declare class App\Http\Controllers\TransactionController, because the name is already in use {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot declare class App\\Http\\Controllers\\TransactionController, because the name is already in use at /var/www/html/app/Http/Controllers/api/TransactionController.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2024-12-05 00:26:25] local.ERROR: Class "App\Http\Controllers\api\Controller" not found {"exception":"[object] (Error(code: 0): Class \"App\\Http\\Controllers\\api\\Controller\" not found at /var/www/html/app/Http/Controllers/api/TransactionController.php:10)
+[stacktrace]
+#0 /var/www/html/vendor/composer/ClassLoader.php(576): include()
+#1 /var/www/html/vendor/composer/ClassLoader.php(427): Composer\\Autoload\\{closure}()
+#2 [internal function]: Composer\\Autoload\\ClassLoader->loadClass()
+#3 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(1116): is_a()
+#4 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(1053): Illuminate\\Routing\\Route->controllerMiddleware()
+#5 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(820): Illuminate\\Routing\\Route->gatherMiddleware()
+#6 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(802): Illuminate\\Routing\\Router->gatherRouteMiddleware()
+#7 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack()
+#8 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(750): Illuminate\\Routing\\Router->runRoute()
+#9 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute()
+#10 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(201): Illuminate\\Routing\\Router->dispatch()
+#11 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#12 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#13 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#14 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#15 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#16 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#17 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#18 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#19 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\ValidatePostSize->handle()
+#20 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#21 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#22 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(62): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#23 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#24 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#25 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#26 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#27 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle()
+#28 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#29 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then()
+#30 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#31 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1190): Illuminate\\Foundation\\Http\\Kernel->handle()
+#32 /var/www/html/public/index.php(17): Illuminate\\Foundation\\Application->handleRequest()
+#33 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('...')
+#34 {main}
+"} 
