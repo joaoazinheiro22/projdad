@@ -44,7 +44,7 @@ class TransactionController extends Controller
             return response()->json([
                 'success' => true,
                 'transaction' => $transaction,
-                'balance' => Auth::user()->brain_coins_balance
+                'balance' => Auth::user()->refresh()->brain_coins_balance
             ]);
         } catch (\Exception $e) {
             return response()->json([

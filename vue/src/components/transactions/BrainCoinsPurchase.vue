@@ -1,56 +1,58 @@
 <script setup>
-import { ref } from 'vue'
-import { useTransactionStore } from '@/stores/transaction'
+import { ref } from 'vue';
+import { useTransactionStore } from '@/stores/transaction';
+import { useToast } from 'vue-toastification';
+import ErrorMessage from '@/components/common/ErrorMessage.vue';
+import SuccessMessage from '@/components/common/SuccessMessage.vue';
 
-const transactionStore = useTransactionStore()
+const transactionStore = useTransactionStore();
+const toast = useToast();
 
-const paymentType = ref('MBWAY')
-const paymentReference = ref('')
-const amount = ref(1)
-const loading = ref(false)
-const error = ref(null)
+const paymentType = ref('MBWAY');
+const paymentReference = ref('');
+const amount = ref(1);
+const loading = ref(false);
+const error = ref(null);
 
 function getReferencePlaceholder() {
     switch (paymentType.value) {
-        case 'MBWAY': return '915785345'
-        case 'IBAN': return 'PT50123456781234567812349'
-        case 'MB': return '45634-123456789'
-        case 'VISA': return '4321567812345678'
-        default: return 'Enter reference'
+        case 'MBWAY': return '915785345';
+        case 'IBAN': return 'PT50123456781234567812349';
+        case 'MB': return '45634-123456789';
+        case 'VISA': return '4321567812345678';
+        default: return 'Enter reference';
     }
 }
 
 async function submitPurchase() {
     try {
-        loading.value = true
+        loading.value = true;
         const result = await transactionStore.purchaseBrainCoins({
-            payment_type: paymentType.value,
+            type: paymentType.value,
             reference: paymentReference.value,
             amount: amount.value
-        })
+        });
 
-        console.log('Purchase result:', result)
+        toast.success(`Successfully purchased ${amount.value * 10} Brain Coins!`);
 
         // Reset form
-        paymentReference.value = ''
-        amount.value = 1
+        paymentReference.value = '';
+        amount.value = 1;
     } catch (err) {
-        error.value = err.message || 'Purchase failed'
+        error.value = err.message || 'Purchase failed';
+        toast.error(error.value);
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 </script>
-
-
 
 <template>
     <div class="max-w-3xl mx-auto py-12">
         <h1 class="text-3xl font-bold mb-8">Purchase Brain Coins</h1>
 
-        <div v-if="error" class="text-red-500 text-sm mb-4">
-            {{ error }}
-        </div>
+        <ErrorMessage :errorMessage="error" />
+        <SuccessMessage :successMessage="success" />
 
         <form @submit.prevent="submitPurchase" class="space-y-6">
             <div class="space-y-2">
@@ -82,9 +84,5 @@ async function submitPurchase() {
                 {{ loading ? 'Processing...' : 'Purchase Brain Coins' }}
             </button>
         </form>
-
-        <div class="mt-8 text-gray-700">
-            Current Balance: {{ transactionStore.totalBrainCoins }} Brain Coins
-        </div>
     </div>
 </template>

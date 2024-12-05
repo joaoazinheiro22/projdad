@@ -37,8 +37,13 @@ export const useTransactionStore = defineStore('transaction', () => {
         storeError.resetMessages()
         try {
             const response = await axios.post('transactions/purchase', paymentDetails)
+
+            // Directly update the balance with the response value
             balance.value = response.data.balance
+
+            // Unshift the new transaction to the beginning of the transactions array
             transactions.value.unshift(response.data.transaction)
+
             return response.data
         } catch (e) {
             storeError.setErrorMessages(
