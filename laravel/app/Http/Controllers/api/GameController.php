@@ -10,7 +10,7 @@ use App\Http\Resources\GameResource;
 use App\Models\Game;
 use Illuminate\Support\Facades\Auth;
 use App\Services\TransactionService;
-
+use Illuminate\Container\Attributes\Log;
 
 class GameController extends Controller
 {
@@ -50,11 +50,11 @@ class GameController extends Controller
      */
     public function store(StoreGameRequest $request)
     {
-        $game = Game::create($request->validated());
+        $user = $request->user();
 
-        // Check if the user is authenticated
-        if (auth()->check()) {
-            $user = auth()->user();
+        if ($user) {
+            // Create the game and associate it with the user
+            $game = Game::create($request->validated());
 
             // Check if the board_id is 2 or 3
             if (in_array($request->board_id, [2, 3])) {
@@ -65,9 +65,11 @@ class GameController extends Controller
                 $user->brain_coins_balance -= 1;
                 $user->save();
             }
-        }
 
-        return new GameResource($game);
+            return new GameResource($game);
+        } else {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
     }
 
     /**

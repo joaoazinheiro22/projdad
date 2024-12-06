@@ -43,19 +43,7 @@ Route::get('/scoreboard/single-player-best-times/{cols}/{rows}', [ScoreboardCont
 Route::get('/scoreboard/single-player-min-turns/{cols}/{rows}', [ScoreboardController::class, 'getTopSinglePlayerMinTurns']);
 Route::get('/scoreboard/top-multiplayer-victories', [ScoreboardController::class, 'getTopMultiplayerVictories']);
 
-
-//Route::apiResource('games', GameController::class);
-/*
-    GET /games          -> index
-    GET /games/{game}   -> show
-    POST /games         -> store
-    PUT /games/{game}   -> update
-    DELETE /games/{game}-> destroy
-*/
-
 Route::get('/games', [GameController::class, 'index']);
-Route::post('/games', [GameController::class, 'store']);
-Route::put('/games/{game}', [GameController::class, 'update']);
-// Route::get('/users', [UserController::class, 'index'])
-//    ->can('viewAny', User::class);
 Route::get('/games/{game}', [GameController::class, 'show']);
+Route::put('/games/{game}', [GameController::class, 'update']);
+Route::delete('/games/{game}', [GameController::class, 'destroy']);
