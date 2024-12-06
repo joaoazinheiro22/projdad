@@ -61,7 +61,6 @@ class GameController extends Controller
                 // Create a game transaction for -1 brain coin
                 $this->transactionService->createGameTransaction($user, $game->id, -1);
 
-
                 // Deduct 1 brain coin from the user's balance
                 $user->brain_coins_balance -= 1;
                 $user->save();

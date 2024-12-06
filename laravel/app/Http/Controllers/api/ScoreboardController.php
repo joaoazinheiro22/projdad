@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Game;
 use Illuminate\Support\Facades\Log;
-
-
+use Carbon\Carbon;
 
 class ScoreboardController extends Controller
 {
@@ -28,7 +27,9 @@ class ScoreboardController extends Controller
                 'boards.board_cols',
                 'boards.board_rows',
                 'users.nickname',
-                'games.total_time'
+                'games.total_time',
+                'games.began_at',
+                'games.total_turns_winner'
             )
             ->where('boards.board_cols', $cols)
             ->where('boards.board_rows', $rows)
@@ -39,8 +40,8 @@ class ScoreboardController extends Controller
 
         foreach ($singlePlayerBestTimes as $game) {
             $game->total_time = $this->convertSecondsToMinutesAndSeconds($game->total_time);
+            $game->began_at = Carbon::parse($game->began_at)->format('Y-m-d H:i:s');
         }
-
 
         return response()->json($singlePlayerBestTimes);
     }
@@ -54,7 +55,9 @@ class ScoreboardController extends Controller
                 'boards.board_cols',
                 'boards.board_rows',
                 'users.nickname',
-                'games.total_turns_winner'
+                'games.total_turns_winner',
+                'games.total_time',
+                'games.began_at'
             )
             ->where('boards.board_cols', $cols)
             ->where('boards.board_rows', $rows)
@@ -62,6 +65,11 @@ class ScoreboardController extends Controller
             ->orderBy('games.total_turns_winner')
             ->limit(5)
             ->get();
+
+        foreach ($singlePlayerMinTurns as $game) {
+            $game->total_time = $this->convertSecondsToMinutesAndSeconds($game->total_time);
+            $game->began_at = Carbon::parse($game->began_at)->format('Y-m-d H:i:s');
+        }
 
         return response()->json($singlePlayerMinTurns);
     }
@@ -92,7 +100,9 @@ class ScoreboardController extends Controller
             ->select(
                 'boards.board_cols',
                 'boards.board_rows',
-                'games.total_time'
+                'games.total_time',
+                'games.created_at',
+                'games.total_turns_winner'
             )
             ->where('users.id', $userId)
             ->where('boards.board_cols', $cols)
@@ -113,7 +123,8 @@ class ScoreboardController extends Controller
             ->select(
                 'boards.board_cols',
                 'boards.board_rows',
-                'games.total_turns_winner'
+                'games.total_turns_winner',
+                'games.created_at'
             )
             ->where('users.id', $userId)
             ->where('boards.board_cols', $cols)
