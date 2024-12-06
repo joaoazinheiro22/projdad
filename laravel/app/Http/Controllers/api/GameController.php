@@ -9,10 +9,19 @@ use Illuminate\Http\Request;
 use App\Http\Resources\GameResource;
 use App\Models\Game;
 use Illuminate\Support\Facades\Auth;
+use App\Services\TransactionService;
 
 
 class GameController extends Controller
 {
+    protected $transactionService;
+
+    public function __construct(TransactionService $transactionService)
+    {
+        $this->transactionService = $transactionService;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -42,6 +51,23 @@ class GameController extends Controller
     public function store(StoreGameRequest $request)
     {
         $game = Game::create($request->validated());
+
+        // Check if the user is authenticated
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            // Check if the board_id is 2 or 3
+            if (in_array($request->board_id, [2, 3])) {
+                // Create a game transaction for -1 brain coin
+                $this->transactionService->createGameTransaction($user, $game->id, -1);
+
+
+                // Deduct 1 brain coin from the user's balance
+                $user->brain_coins_balance -= 1;
+                $user->save();
+            }
+        }
+
         return new GameResource($game);
     }
 

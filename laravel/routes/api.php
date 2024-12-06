@@ -54,6 +54,8 @@ Route::get('/scoreboard/top-multiplayer-victories', [ScoreboardController::class
 */
 
 Route::get('/games', [GameController::class, 'index']);
+Route::post('/games', [GameController::class, 'store']);
+Route::put('/games/{game}', [GameController::class, 'update']);
 // Route::get('/users', [UserController::class, 'index'])
 //    ->can('viewAny', User::class);
 Route::get('/games/{game}', [GameController::class, 'show']);
