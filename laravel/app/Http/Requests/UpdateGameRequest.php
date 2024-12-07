@@ -26,7 +26,7 @@ class UpdateGameRequest extends FormRequest
             'status' => 'required|in:PE,PL,E,I',
             'ended_at' => 'nullable|date',
             'total_time' => 'nullable|integer|min:0',
-            'custom' => 'nullable|json',
+            'total_turns_winner' => 'nullable|integer|min:0',
         ];
     }
 }
