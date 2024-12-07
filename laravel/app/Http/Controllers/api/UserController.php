@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateCoinsRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
@@ -39,6 +40,14 @@ class UserController extends Controller
     {
         $user->fill($request->validated());
         $user->save();
+        return new UserResource($user);
+    }
+
+    public function updateCoins(UpdateCoinsRequest $request, User $user)
+    {
+        $user->brain_coins_balance = $request->validated()['coins'];
+        $user->save();
+
         return new UserResource($user);
     }
 
