@@ -30,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/scoreboard/users-stats/{id}/{cols}/{rows}', [ScoreboardController::class, 'getUserStats']);
 
+    Route::get('/scoreboard/users-stats/best-times/{id}', [ScoreboardController::class, 'getUserBestTimes']);
+    Route::get('/scoreboard/users-stats/min-turns/{id}', [ScoreboardController::class, 'getUserMinTurns']);
+
     Route::get('/stats/admin', [StatisticsController::class, 'getAdminStats'])->can('viewAny', User::class);
 
     Route::get('/transactions', [TransactionController::class, 'getTransactionHistory']);

@@ -146,4 +146,55 @@ class ScoreboardController extends Controller
         $userStats['win_rate'] = $totalGames > 0 ? number_format(($victories / $totalGames) * 100, 2) : '0.00';
         return response()->json($userStats);
     }
+    
+
+    public function getUserBestTimes($userId)
+    {
+        $userBestTimes = Game::where('games.type', 'S')
+            ->join('boards', 'games.board_id', '=', 'boards.id')
+            ->join('users', 'games.created_user_id', '=', 'users.id')
+            ->select(
+                'boards.board_cols',
+                'boards.board_rows',
+                'games.total_time',
+                'games.created_at',
+                'games.total_turns_winner'
+            )
+            ->where('users.id', $userId)
+            ->whereNotNull('games.total_time')
+            ->orderBy('games.total_time')
+            ->limit(10)
+            ->get()
+            ->map(function ($game) {
+                $game->total_time = $this->convertSecondsToMinutesAndSeconds($game->total_time);
+                return $game;
+            });
+
+        return response()->json($userBestTimes);
+    }
+
+    public function getUserMinTurns($userId)
+    {
+        $userMinTurns = Game::where('games.type', 'S')
+            ->join('boards', 'games.board_id', '=', 'boards.id')
+            ->join('users', 'games.created_user_id', '=', 'users.id')
+            ->select(
+                'boards.board_cols',
+                'boards.board_rows',
+                'games.total_turns_winner',
+                'games.created_at',
+                'games.total_time'
+            )
+            ->where('users.id', $userId)
+            ->whereNotNull('games.total_turns_winner')
+            ->orderBy('games.total_turns_winner')
+            ->limit(10)
+            ->get()
+            ->map(function ($game) {
+                $game->total_time = $this->convertSecondsToMinutesAndSeconds($game->total_time);
+                return $game;
+            });
+
+        return response()->json($userMinTurns);
+    }
 }
