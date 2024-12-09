@@ -66,6 +66,11 @@ const toggleHistoryDropdown = () => {
               active-class="text-blue-600 font-semibold">
               WebSockets Tester
             </RouterLink>
+            <RouterLink to="/chat"
+              class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              active-class="text-blue-600 font-semibold">
+              Multiplayer
+            </RouterLink>
             <RouterLink to="/statistics"
               class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               active-class="text-blue-600 font-semibold">

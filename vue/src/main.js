@@ -9,7 +9,7 @@ import App from './App.vue'
 import router from './router'
 
 const app = createApp(App)
-
+app.provide('socket', io('http://localhost:3000')) // comment this to deploy
 app.use(router)
 
 app.use(createPinia())
@@ -21,7 +21,7 @@ console.log('ws connection', wsConnection)
 
 axios.defaults.baseURL = `http://${apiDomain}/api`
 
-app.provide('socket', io(wsConnection))
+//app.provide('socket', io(wsConnection)) uncomment this line when deploying
 
 app.provide('serverBaseUrl', apiDomain)
 

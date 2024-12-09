@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
@@ -7,7 +7,7 @@ import avatarNoneAssetURL from '@/assets/avatar-none.png'
 
 export const useAuthStore = defineStore('auth', () => {
   const storeError = useErrorStore()
-
+  const socket = inject('socket')
   const user = ref(null)
   const token = ref(localStorage.getItem('authToken') || '')
 
@@ -74,6 +74,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   const clearUser = () => {
     resetIntervalToRefreshToken()
+    if (user.value) {
+      socket.emit('logout', user.value)
+    }
     user.value = null
     token.value = ''
     localStorage.removeItem('authToken')
@@ -101,6 +104,7 @@ export const useAuthStore = defineStore('auth', () => {
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       const responseUser = await axios.get('users/me')
       user.value = responseUser.data
+      socket.emit('login', user.value)
       repeatRefreshToken()
       return user.value
     } catch (e) {
@@ -187,6 +191,26 @@ export const useAuthStore = defineStore('auth', () => {
     return intervalToRefreshToken
   }
 
+  const restoreToken = async function () {
+    let storedToken = localStorage.getItem('token')
+        if (storedToken) {
+            try {
+                token.value = storedToken
+                axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+                const responseUser = await axios.get('users/me')
+                user.value = responseUser.data.data
+                socket.emit('login', user.value)
+                repeatRefreshToken()
+                return true                 
+            } catch {
+                clearUser()
+                return false 
+            }
+    }
+    return false
+}
+
+
   return {
     user,
     userName,
@@ -203,6 +227,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     register,
-    removeAccount
+    removeAccount,
+    repeatRefreshToken,
+    restoreToken
   }
 })
