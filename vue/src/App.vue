@@ -3,6 +3,7 @@ import { useTemplateRef, provide, ref } from 'vue';
 import Toaster from './components/ui/toast/Toaster.vue';
 import { useAuthStore } from '@/stores/auth';
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+import GlobalInputDialog from './components/common/GlobalInputDialog.vue';
 import router from './router';
 
 const authStore = useAuthStore()
@@ -11,6 +12,9 @@ const isHistoryDropdownOpen = ref(false)
 
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
+
+const inputDialog = useTemplateRef('input-dialog')
+provide('inputDialog', inputDialog)
 
 const logoutConfirmed = () => {
   authStore.logout()
@@ -51,6 +55,7 @@ const toggleHistoryDropdown = () => {
 <template>
   <Toaster />
   <GlobalAlertDialog ref="alert-dialog"></GlobalAlertDialog>
+  <GlobalInputDialog ref="input-dialog"></GlobalInputDialog>
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
