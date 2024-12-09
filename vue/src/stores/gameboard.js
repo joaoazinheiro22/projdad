@@ -189,7 +189,6 @@ export const useGameBoardStore = defineStore('gameboard', () => {
 
 
     return {
-        // State
         cards,
         selectedCards,
         matchedCards,
@@ -201,7 +200,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         currentGameId,
         boardId,
 
-        // Methods
+
         initializeGame,
         flipCard,
         resetGame,

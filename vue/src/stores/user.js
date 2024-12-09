@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', () => {
             )
         }
     }
-    
+
     const totalUsers = computed(() => {
         return users.value ? users.value.length : 0
     })
@@ -101,8 +101,10 @@ export const useUserStore = defineStore('user', () => {
                 action: h(ToastAction, {
                     altText: `Open new user`,
                     onclick: () => {
-                        router.push({ name: 'updateUser', 
-                                      params: {id: response.data.data.id} })
+                        router.push({
+                            name: 'updateUser',
+                            params: { id: response.data.data.id }
+                        })
                     }
                 }, {
                     default: () => `Open new user`,
@@ -111,24 +113,6 @@ export const useUserStore = defineStore('user', () => {
             return response.data.data
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error inserting user!')
-            return false
-        }
-    }
-
-    const updateUser = async (user) => {
-        storeError.resetMessages()
-        try {
-            const response = await axios.put('users/' + user.id, user)
-            const index = getIndexOfUser(user.id)
-            if (index > -1) {
-                users.value[index] = Object.assign({}, response.data.data)
-            }
-            toast({
-                description: 'User has been updated correctly!',
-            })
-            return response.data.data
-        } catch (e) {
-            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating user!')
             return false
         }
     }
@@ -174,6 +158,6 @@ export const useUserStore = defineStore('user', () => {
     return {
         users, getUsers, totalUsers, totalFilteredUsers, filteredUsers,
         filterDescription, filterByType, filterByBlocked,
-        fetchUsers, fetchUser, insertUser, updateUser, deleteUser, toggleBlockedUser
+        fetchUsers, fetchUser, insertUser, deleteUser, toggleBlockedUser
     }
 })

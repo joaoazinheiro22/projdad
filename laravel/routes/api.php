@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);
+    Route::post('auth/upload-photo', [AuthController::class, 'uploadPhoto']);
     Route::post('auth/refreshtoken', [AuthController::class, 'refreshToken']);
 
     Route::get('games/history', [GameController::class, 'getUserGameHistory']);

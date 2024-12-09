@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
     const firstName = names[0] ?? ''
     const lastName = names.length > 1 ? names[names.length - 1] : ''
     return (firstName + ' ' + lastName).trim()
-})
+  })
 
   const userEmail = computed(() => {
     return user.value ? user.value.email : ''
@@ -55,7 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
   const userPhotoUrl = computed(() => {
     const photoFile = user.value ? (user.value.photo_filename ?? '') : ''
     if (photoFile) {
-      return axios.defaults.baseURL.replaceAll('/api', photoFile)
+      return axios.defaults.baseURL.replace('/api', '') + '/storage/photos/' + photoFile
     }
     return avatarNoneAssetURL
   })
@@ -150,6 +150,26 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const updateUser = async (formData) => {
+    storeError.resetMessages()
+    try {
+      const response = await axios.put(`users/${userId.value}`, formData)
+
+      // Update the user data in the store
+      user.value = response.data.data
+
+      return response.data.data
+    } catch (error) {
+      storeError.setErrorMessages(
+        error.response.data.message,
+        error.response.data.errors,
+        error.response.status,
+        'Profile Update Error!'
+      )
+      return false
+    }
+  }
+
 
   let intervalToRefreshToken = null
 
@@ -187,6 +207,20 @@ export const useAuthStore = defineStore('auth', () => {
     return intervalToRefreshToken
   }
 
+  const uploadPhoto = async (formData) => {
+    try {
+      const response = await axios.post('auth/upload-photo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Photo upload failed:', error)
+      return { photo_filename: '' }
+    }
+  }
+
   return {
     user,
     userName,
@@ -203,6 +237,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     register,
-    removeAccount
+    removeAccount,
+    updateUser,
+    uploadPhoto
   }
 })
