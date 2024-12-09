@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import {
     Card,
     CardContent,
@@ -19,6 +19,10 @@ const storeAuth = useAuthStore()
 const inputDialog = inject('inputDialog')
 
 const message = ref('')
+
+onMounted(() => {
+  storeAuth.restoreToken();
+});
 
 const canSendMessageToUser = (user) => {
     return user && storeAuth.user && user.id !== storeAuth.user.id

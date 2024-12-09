@@ -95,29 +95,29 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const login = async (credentials) => {
-    storeError.resetMessages()
+    storeError.resetMessages();
     try {
-      const responseLogin = await axios.post('auth/login', credentials)
-      token.value = responseLogin.data.token
-      localStorage.setItem('authToken', token.value)
-      console.log('token', token.value)
-      axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
-      const responseUser = await axios.get('users/me')
-      user.value = responseUser.data
-      socket.emit('login', user.value)
-      repeatRefreshToken()
-      return user.value
+      const responseLogin = await axios.post('auth/login', credentials);
+      token.value = responseLogin.data.token;
+      localStorage.setItem('authToken', token.value); 
+      console.log('token', token.value);
+      axios.defaults.headers.common.Authorization = 'Bearer ' + token.value;
+      const responseUser = await axios.get('users/me');
+      user.value = responseUser.data;
+      socket.emit('login', user.value);
+      repeatRefreshToken();
+      return user.value;
     } catch (e) {
-      clearUser()
+      clearUser();
       storeError.setErrorMessages(
         e.response.data.message,
         e.response.data.errors,
         e.response.status,
         'Authentication Error!'
-      )
-      return false
+      );
+      return false;
     }
-  }
+  };
 
   const logout = async () => {
     storeError.resetMessages()
@@ -192,23 +192,23 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const restoreToken = async function () {
-    let storedToken = localStorage.getItem('token')
-        if (storedToken) {
-            try {
-                token.value = storedToken
-                axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
-                const responseUser = await axios.get('users/me')
-                user.value = responseUser.data.data
-                socket.emit('login', user.value)
-                repeatRefreshToken()
-                return true                 
-            } catch {
-                clearUser()
-                return false 
-            }
+    let storedToken = localStorage.getItem('authToken');
+    if (storedToken) {
+      try {
+        token.value = storedToken;
+        axios.defaults.headers.common.Authorization = 'Bearer ' + token.value;
+        const responseUser = await axios.get('users/me');
+        user.value = responseUser.data;
+        socket.emit('login', user.value);
+        repeatRefreshToken();
+        return true;
+      } catch {
+        clearUser();
+        return false;
+      }
     }
-    return false
-}
+    return false;
+  };
 
 
   return {
@@ -228,7 +228,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     register,
     removeAccount,
-    repeatRefreshToken,
+    
     restoreToken
   }
 })

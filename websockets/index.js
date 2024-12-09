@@ -10,6 +10,9 @@ const io = require("socket.io")(httpServer, {
 const { createUtil } = require('./util');
 const util = createUtil();
 
+const { createLobby } = require('./lobby');
+const lobby = createLobby();
+
 httpServer.listen(3000, () => {
   console.log('listening on *:3000');
 });
