@@ -20,6 +20,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/users/{id}', [AuthController::class, 'updateUser']);
     Route::put('/users/{user}/coins', [UserController::class, 'updateCoins']);
+    Route::patch('users/{user}/blocked', [UserController::class, 'updateBlocked']);
+    // Route::delete('users/{user}', [UserController::class, 'destroy']);
+
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);
     Route::post('auth/refreshtoken', [AuthController::class, 'refreshToken']);
@@ -40,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'getTransactionHistory']);
     Route::post('/transactions/purchase', [TransactionController::class, 'purchaseBrainCoins']);
 });
+
 
 Route::post('/auth/login', [AuthController::class, "login"]);
 Route::post('/auth/register', [AuthController::class, "register"]);

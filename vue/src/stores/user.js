@@ -138,6 +138,11 @@ export const useUserStore = defineStore('user', () => {
             blocked: !user.blocked
         }
         storeError.resetMessages()
+
+        if (user.type === 'A'){
+            storeError.setErrorMessages("You can't block administrators!", 'Error blocking user!')
+            return false
+        }
         try {
             const response = await axios.patch('users/' + user.id + '/blocked', requestBody)
             const index = getIndexOfUser(user.id)

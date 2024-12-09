@@ -1,32 +1,38 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { useTemplateRef, provide, ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { Button } from '@/components/ui/button'
+import Toaster from '@/components/ui/toast/Toaster.vue';
+import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+import 'primeicons/primeicons.css'
 
 const userStore = useUserStore()
+// const toast = useTemplateRef('toaster')
 
-// Pagination State
+// const alertDialog = useTemplateRef('alert-dialog')
+// provide('alertDialog', alertDialog)
+
 const currentPage = ref(1)
 const itemsPerPage = 10
 
-// Fetch users on component mount
+
 onMounted(async () => {
     await userStore.getUsers()
 })
 
-// Computed: Total Pages
+
 const totalPages = computed(() => {
     return Math.ceil(userStore.users.length / itemsPerPage)
 })
 
-// Computed: Paginated Users
+
 const paginatedUsers = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     const end = start + itemsPerPage
     return userStore.users.slice(start, end)
 })
 
-// Pagination Methods
+
 const prevPage = () => {
     if (currentPage.value > 1) {
         currentPage.value--
@@ -38,9 +44,32 @@ const nextPage = () => {
         currentPage.value++
     }
 }
+
+
+const toggleBlockedStatus = async (user) => {
+    const result = await userStore.toggleBlockedUser(user)
+    if (result) {
+        console.log(`User ${user.id} status updated!`)
+    } else {
+        console.error('Failed to update user status.')
+    }
+}
+
+// const deleteAccountConfirmed = async (user) => {
+//     await userStore.deleteUser(user);
+// }
+
+// const deleteAccount = (user) => {
+//     alertDialog.value.open(() => deleteAccountConfirmed(user),
+//         'Delete confirmation?', 'Cancel', `Yes, I want to delete this account`,
+//         `Are you sure you want to delete this account? This action is irreversable.`)
+// }
+
 </script>
 
 <template>
+    <!-- <Toaster />
+    <GlobalAlertDialog ref="alert-dialog"></GlobalAlertDialog> -->
     <div class="max-w-4xl mx-auto py-12">
         <h1 class="text-3xl font-bold mb-8 text-center">User List</h1>
 
@@ -60,9 +89,15 @@ const nextPage = () => {
                         <td class="py-2 border-b text-center">{{ user.email }}</td>
                         <td class="py-2 border-b text-center">{{ user.type || 'Regular' }}</td>
                         <td class="py-2 border-b text-center">
-                            <span :class="user.blocked ? 'text-red-500' : 'text-green-500'">
+                            <button @click="toggleBlockedStatus(user)"
+                                :class="user.blocked ? 'text-red-500' : 'text-green-500'">
                                 {{ user.blocked ? 'Blocked' : 'Active' }}
-                            </span>
+                            </button>
+                        </td>
+                        <td class="py-2 border-b text-center">
+                            <button @click="deleteAccount(user)" class="text-red-500 hover:text-red-700">
+                                <i class="pi pi-trash text-lg"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>

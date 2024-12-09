@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
 use Notification;
 use App\Notifications\CoinsUpdatedNotification;
+use App\Http\Requests\UpdateBlockUserRequest;
 
 class UserController extends Controller
 {
@@ -58,7 +59,7 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function updateBlocked(Request $request, User $user)
+    public function updateBlocked(UpdateBlockUserRequest $request, User $user)
     {
         $user->blocked = $request->validated()['blocked'];
         $user->save();
