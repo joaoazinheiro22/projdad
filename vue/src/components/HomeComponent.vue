@@ -100,6 +100,6 @@ const authStore = useAuthStore();
     </div>
   </div>
   <div v-else>
-    <h1>403 Forbidden</h1>
+    <h1 class="text-center">As an admin you can't access this page</h1>
   </div>
 </template>

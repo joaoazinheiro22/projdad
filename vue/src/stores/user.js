@@ -39,6 +39,7 @@ export const useUserStore = defineStore('user', () => {
         return filteredUsers.value ? filteredUsers.value.length : 0
     })
 
+
     // Private helper function for filtering users
     const userInFilter = (user) => {
         if (filterByBlocked.value !== null) {
@@ -60,7 +61,7 @@ export const useUserStore = defineStore('user', () => {
         if (!filterByBlocked.value && !filterByType.value) {
             return 'All users'
         }
-        let description = 'Users'
+        let description = ''
         if (filterByBlocked.value !== null) {
             description += filterByBlocked.value ? ' that are blocked' : ' that are not blocked'
         }

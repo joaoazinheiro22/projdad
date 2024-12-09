@@ -12,6 +12,8 @@ import GlobalScores from '@/components/scoreboard/GlobalScores.vue'
 import UsersScoreBoard from '@/components/scoreboard/UsersScoreBoard.vue'
 import Statistics from '@/components/statistics/Statistics.vue'
 import BrainCoinsPurchase from '@/components/transactions/BrainCoinsPurchase.vue'
+import GameHistory from '@/components/history/GameHistory.vue'
+import TransactionHistory from '@/components/history/TransactionHistory.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +38,19 @@ const router = createRouter({
         {
           path: ':id',
           component: UsersScoreBoard
+        }
+      ]
+    },
+    {
+      path: '/history',
+      children: [
+        {
+          path: 'game',
+          component: GameHistory
+        },
+        {
+          path: 'transaction',
+          component: TransactionHistory
         }
       ]
     },

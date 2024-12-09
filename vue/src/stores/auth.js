@@ -60,8 +60,16 @@ export const useAuthStore = defineStore('auth', () => {
     return avatarNoneAssetURL
   })
 
+  const userPlayer = computed(() => {
+    return userType.value === 'P'
+  })
+
   const userAdmin = computed(() => {
     return userType.value === 'A'
+  })
+
+  const userLoggedIn = computed(() => {
+    return !!user.value
   })
 
   const clearUser = () => {
@@ -188,7 +196,9 @@ export const useAuthStore = defineStore('auth', () => {
     userType,
     userGender,
     userPhotoUrl,
+    userPlayer,
     userAdmin,
+    userLoggedIn,
     userBrainCoinsBalance,
     login,
     logout,
