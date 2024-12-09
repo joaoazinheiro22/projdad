@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateCoinsRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
+use Notification;
+use App\Notifications\CoinsUpdatedNotification;
 
 class UserController extends Controller
 {
@@ -45,9 +47,14 @@ class UserController extends Controller
 
     public function updateCoins(UpdateCoinsRequest $request, User $user)
     {
+        $oldBalance = $user->brain_coins_balance;
         $user->brain_coins_balance = $request->validated()['coins'];
         $user->save();
 
+        $diff = $user->brain_coins_balance - $oldBalance;
+        if ($diff > 0) {
+            Notification::send($user, new CoinsUpdatedNotification($diff));
+        }
         return new UserResource($user);
     }
 
