@@ -20,8 +20,11 @@ const userProfile = ref({
     nickname: authStore.user ? authStore.user.nickname : '',
     name: authStore.userName,
     photo: authStore.userPhotoUrl,
-    password: ''
+    password: '',
+    photo_filename: authStore.user ? authStore.user.photo_filename : ''
 })
+
+console.log('User Profile:', userProfile)
 
 const uploadPhoto = async (file) => {
     const formData = new FormData()
@@ -29,25 +32,25 @@ const uploadPhoto = async (file) => {
     const response = await authStore.uploadPhoto(formData)
     if (response.photo_filename) {
         console.log('Photo uploaded:', response.photo_filename)
-        userProfile.value.photo = response.photo_filename
+        userProfile.value.photo_filename = response.photo_filename
+        userProfile.value.photo = authStore.userPhotoUrl // Update the photo URL
     }
 }
 
 const updateProfile = async () => {
     try {
-
         const updatedUser = await authStore.updateUser({
             ...userProfile.value,
-            photo_filename: userProfile.value.photo
+            photo_filename: userProfile.value.photo_filename || undefined
         });
         if (updatedUser) {
             console.log('Profile updated:', updatedUser);
+            authStore.user = updatedUser;
         }
-
     } catch (error) {
         console.error('Update error:', error.response?.data);
     }
-};
+}
 
 const removeAccount = async (password) => {
     console.log('Removing account...');

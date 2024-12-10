@@ -114,8 +114,7 @@ class AuthController extends Controller
             $user->password = Hash::make($validatedData['password']);
         }
 
-        // Handle photo upload
-        if (!empty($validatedData['photo_filename'])) {
+        if (isset($validatedData['photo_filename'])) {
 
             // Update the photo filename in the database
             $user->photo_filename = $validatedData['photo_filename'];

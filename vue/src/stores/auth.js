@@ -158,7 +158,7 @@ export const useAuthStore = defineStore('auth', () => {
       // Update the user data in the store
       user.value = response.data.data
 
-      return response.data.data
+      return user.value
     } catch (error) {
       storeError.setErrorMessages(
         error.response.data.message,
