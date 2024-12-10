@@ -14,14 +14,14 @@ Route::get('/stats/generic', [StatisticsController::class, 'getGenericStats']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/users/me', function (Request $request) {
+    Route::get('users/me', function (Request $request) {
         return $request->user();
     });
 
     Route::put('/users/{id}', [AuthController::class, 'updateUser']);
     Route::put('/users/{user}/coins', [UserController::class, 'updateCoins']);
     Route::patch('users/{user}/blocked', [UserController::class, 'updateBlocked']);
-    // Route::delete('users/{user}', [UserController::class, 'destroy']);
+    Route::delete('users/{user}/delete', [UserController::class, 'destroy']);
 
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);
