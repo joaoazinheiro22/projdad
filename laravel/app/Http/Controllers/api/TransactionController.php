@@ -21,7 +21,16 @@ class TransactionController extends Controller
     public function getTransactionHistory()
     {
         $user = Auth::user();
-        return $user->transactions()->orderBy('transaction_datetime', 'desc')->paginate(20);
+
+        if ($user->type === 'A') {
+            return User::with('transactions')
+                ->join('transactions', 'users.id', '=', 'transactions.user_id')
+                ->select('transactions.*', 'users.name as user_name')
+                ->orderBy('transactions.transaction_datetime', 'desc')
+                ->paginate(20);
+        } else {
+            return $user->transactions()->orderBy('transaction_datetime', 'desc')->paginate(20);
+        }
     }
 
     // Purchase brain coins

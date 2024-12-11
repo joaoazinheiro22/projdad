@@ -44,8 +44,6 @@ const resetFilter = () => {
 }
 
 const applyFilter = () => {
-    // The filtering is automatically handled by the computed filteredUsers in the store
-    // No additional action needed here
     console.log('Filtering applied')
 }
 </script>
@@ -89,7 +87,7 @@ const applyFilter = () => {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </button>
-            <button v-show="showApplyButton" type="button" class="my-1  w-28 h-10 shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-md 
+            <button @v-show="showApplyButton" type="button" class="my-1  w-28 h-10 shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-md 
                                         border border-transparent bg-blue-600 text-white 
                                         hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
                     @click.prevent="applyFilter">

@@ -17,7 +17,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         loading.value = true
         storeError.resetMessages()
         try {
-            const response = await axios.get('transactions')
+            const response = await axios.get('transactions/history')
             transactions.value = response.data.data
             balance.value = response.data.balance
         } catch (e) {

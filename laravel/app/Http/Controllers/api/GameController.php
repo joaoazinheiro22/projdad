@@ -34,14 +34,19 @@ class GameController extends Controller
     {
         $user = Auth::user();
 
-        $games = Game::where('created_user_id', $user->id)
-            ->orWhereHas('multiplayer_players', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with(['board', 'created_user', 'winner_user', 'multiplayer_players'])
-            ->orderBy('began_at', 'desc')
-            ->get();
-
+        if ($user->type === 'A') {
+            $games = Game::with(['board', 'created_user', 'winner_user', 'multiplayer_players'])
+                ->orderBy('began_at', 'desc')
+                ->get();
+        } else {
+            $games = Game::where('created_user_id', $user->id)
+                ->orWhereHas('multiplayer_players', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })
+                ->with(['board', 'created_user', 'winner_user', 'multiplayer_players'])
+                ->orderBy('began_at', 'desc')
+                ->get();
+        }
         return GameResource::collection($games);
     }
 

@@ -47,8 +47,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-if="!authStore.userAdmin" class="max-w-4xl mx-auto py-12">
-        <h1 class="text-3xl font-bold mb-8 text-center">Your Transaction History</h1>
+        <h1 class="text-3xl font-bold mb-8 text-center">{{ authStore.userAdmin ? 'All Transactions History' : 'Your Transaction History' }}</h1>
 
         <div v-if="transactionStore.transactionHistory.length > 0" class="bg-white w-full">
             <table class="min-w-full bg-white border border-gray-300">
@@ -92,8 +91,4 @@ onMounted(async () => {
         <div v-else class="text-center py-8 text-gray-500">
             <p>No Transaction History Found</p>
         </div>
-    </div>
-    <div v-else>
-        <h1 class="text-center">As an admin you can't access this page</h1>
-    </div>
 </template>

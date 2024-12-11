@@ -4,10 +4,12 @@ import { useUserStore } from '@/stores/user'
 import { Button } from '@/components/ui/button'
 import Toaster from '@/components/ui/toast/Toaster.vue';
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+import { useAuthStore } from '@/stores/auth'
 import 'primeicons/primeicons.css'
 
 const userStore = useUserStore()
 const toast = useTemplateRef('toaster')
+const authStore = useAuthStore()
 
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
@@ -94,7 +96,7 @@ const deleteAccount = (user) => {
                                 {{ user.blocked ? 'Blocked' : 'Active' }}
                             </button>
                         </td>
-                        <td class="py-2 border-b text-center">
+                        <td v-if="authStore.userId !== user.id" class="py-2 border-b text-center">
                             <button @click="deleteAccount(user)" class="text-red-500 hover:text-red-700">
                                 <i class="pi pi-trash text-lg"></i>
                             </button>

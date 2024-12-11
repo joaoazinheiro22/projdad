@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/stats/admin', [StatisticsController::class, 'getAdminStats'])->can('viewAny', User::class);
 
-    Route::get('/transactions', [TransactionController::class, 'getTransactionHistory']);
+    Route::get('/transactions/history', [TransactionController::class, 'getTransactionHistory']);
     Route::post('/transactions/purchase', [TransactionController::class, 'purchaseBrainCoins']);
 });
 

@@ -3,8 +3,12 @@ import { ref } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 import ErrorMessage from '@/components/common/ErrorMessage.vue';
 //import SuccessMessage from '@/components/common/SuccessMessage.vue';
+import { useRouter } from 'vue-router'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 const transactionStore = useTransactionStore();
+const router = useRouter()
+const { toast } = useToast()
 
 
 const paymentType = ref('MBWAY');
@@ -31,6 +35,15 @@ async function submitPurchase() {
             reference: paymentReference.value,
             amount: amount.value
         });
+
+        if (result) {
+            toast({
+                description: 'Brain Coins purchased successfully!',
+            });
+            router.push('/');
+        } else {
+            throw new Error('Purchase failed');
+        }
 
 
         // Reset form
