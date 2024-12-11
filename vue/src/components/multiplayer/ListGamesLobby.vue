@@ -15,6 +15,10 @@ onMounted(() => {
 
 <template>
     <div class="divide-y divide-gray-200">
+        <div v-if="storeAuth.userType === 'A'">
+            <h2 class="text-xl">Admins do not have access to the lobby!</h2>
+        </div>
+        <div v-else>
       <div v-for="game in storeLobby.games" :key="game.id" class="py-4">
         <div class="flex justify-between items-center">
           <div>
@@ -34,6 +38,7 @@ onMounted(() => {
             </button>
           </div>
         </div>
+      </div>      
       </div>
     </div>
   </template>
