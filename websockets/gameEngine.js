@@ -1,105 +1,122 @@
 exports.createGameEngine = () => {
-    const initGame = (gameData) => {
-        const game = {
-            id: gameData.id,
-            player1: gameData.player1,
-            player2: gameData.player2 || null,
-            board: createBoard(gameData.boardSize || 4), // Default to 4x4 board
-            status: 'waiting', // waiting, playing, ended
-            currentPlayer: gameData.player1.id,
-            matchedPairs: 0,
-            totalPairs: (gameData.boardSize || 4) * (gameData.boardSize || 4) / 2,
-            moves: [],
-        };
-        return game;
+
+    const initGame = (gameFromDB) => {
+        gameFromDB.gameStatus = null; 
+        // null -> game has not started yet  
+        // 0 -> game has started and running 
+        // 1 -> player 1 is the winner 
+        // 2 -> player 2 is the winner 
+        // 3 -> draw (if applicable, e.g., time runs out with no winner)
+        
+        gameFromDB.currentPlayer = 1; // Player 1 starts
+        gameFromDB.board = shuffleCards(); // Randomized deck of cards
+        gameFromDB.flippedCards = []; // Store indices of flipped cards in the current turn
+        gameFromDB.matchedPairs = []; // Store indices of matched pairs
+        return gameFromDB;
     };
 
-    const createBoard = (size) => {
-        const totalCards = size * size;
-        const cardValues = Array.from({ length: totalCards / 2 }, (_, i) => i + 1);
-        const cards = [...cardValues, ...cardValues];
-        return shuffle(cards).map((value, index) => ({
-            id: index,
-            value,
-            isFlipped: false,
-            isMatched: false,
-        }));
-    };
-
-    const shuffle = (array) => {
-        for (let i = array.length - 1; i > 0; i--) {
+    const shuffleCards = () => {
+        const deck = [...Array(16).keys()].map(i => Math.floor(i / 2)); // Generate pairs of card values
+        for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [deck[i], deck[j]] = [deck[j], deck[i]];
         }
-        return array;
+        return deck;
     };
 
-    const play = (game, cardId, playerId) => {
-        if (game.status !== 'playing') {
-            return { error: 'Game is not in playing state' };
+    const isBoardComplete = (game) => game.matchedPairs.length === game.board.length / 2;
+
+    const changeGameStatus = (game) => {
+        if (isBoardComplete(game)) {
+            game.gameStatus = game.player1Score === game.player2Score ? 3 : (game.player1Score > game.player2Score ? 1 : 2);
+        } else {
+            game.gameStatus = 0;
         }
-        if (game.currentPlayer !== playerId) {
-            return { error: 'Not your turn' };
+    };
+
+    const gameEnded = (game) => game.gameStatus > 0;
+
+    const flipCard = (game, index, playerSocketId) => {
+        if ((playerSocketId != game.player1SocketId) && (playerSocketId != game.player2SocketId)) {
+            return {
+                errorCode: 10,
+                errorMessage: 'You are not playing this game!'
+            };
         }
 
-        const card = game.board.find(c => c.id === cardId);
-        if (!card || card.isFlipped || card.isMatched) {
-            return { error: 'Invalid card selection' };
+        if (gameEnded(game)) {
+            return {
+                errorCode: 11,
+                errorMessage: 'Game has already ended!'
+            };
         }
 
-        card.isFlipped = true;
-        game.moves.push(card);
+        if (index < 0 || index >= game.board.length || game.flippedCards.includes(index) || game.matchedPairs.includes(index)) {
+            return {
+                errorCode: 13,
+                errorMessage: 'Invalid play: card cannot be flipped!'
+            };
+        }
 
-        if (game.moves.length === 2) {
-            const [firstCard, secondCard] = game.moves;
-            if (firstCard.value === secondCard.value) {
-                firstCard.isMatched = true;
-                secondCard.isMatched = true;
-                game.matchedPairs++;
-                if (game.matchedPairs === game.totalPairs) {
-                    game.status = 'ended';
-                    game.winner = playerId;
-                }
+        game.flippedCards.push(index);
+
+        if (game.flippedCards.length === 2) {
+            const [first, second] = game.flippedCards;
+            if (game.board[first] === game.board[second]) {
+                game.matchedPairs.push(first, second);
+                game.currentPlayer === 1 ? game.player1Score++ : game.player2Score++;
             } else {
-                setTimeout(() => {
-                    firstCard.isFlipped = false;
-                    secondCard.isFlipped = false;
-                }, 1000); // Flip back after 1 second
+                game.currentPlayer = game.currentPlayer === 1 ? 2 : 1;
             }
-            game.moves = [];
+            game.flippedCards = [];
         }
 
-        game.currentPlayer = game.currentPlayer === game.player1.id ? game.player2.id : game.player1.id;
+        changeGameStatus(game);
         return true;
     };
 
-    const gameEnded = (game) => {
-        return game.status === 'ended';
-    };
-
-    const quit = (game, playerId) => {
-        if (game.status !== 'playing') {
-            return { error: 'Game is not in playing state' };
+    const quit = (game, playerSocketId) => {
+        if ((playerSocketId != game.player1SocketId) && (playerSocketId != game.player2SocketId)) {
+            return {
+                errorCode: 10,
+                errorMessage: 'You are not playing this game!'
+            };
         }
-        game.status = 'ended';
-        game.winner = game.player1.id === playerId ? game.player2.id : game.player1.id;
+
+        if (gameEnded(game)) {
+            return {
+                errorCode: 11,
+                errorMessage: 'Game has already ended!'
+            };
+        }
+
+        game.gameStatus = playerSocketId == game.player1SocketId ? 2 : 1;
         return true;
     };
 
-    const close = (game, playerId) => {
-        if (game.status !== 'playing') {
-            return { error: 'Game is not in playing state' };
+    const close = (game, playerSocketId) => {
+        if ((playerSocketId != game.player1SocketId) && (playerSocketId != game.player2SocketId)) {
+            return {
+                errorCode: 10,
+                errorMessage: 'You are not playing this game!'
+            };
         }
-        game.status = 'ended';
-        game.winner = null;
+
+        if (!gameEnded(game)) {
+            return {
+                errorCode: 14,
+                errorMessage: 'Cannot close a game that has not ended!'
+            };
+        }
+
         return true;
     };
 
     return {
         initGame,
-        play,
         gameEnded,
+        flipCard,
         quit,
-        close,
+        close
     };
 };

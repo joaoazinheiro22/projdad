@@ -14,7 +14,7 @@ import Statistics from '@/components/statistics/Statistics.vue'
 import BrainCoinsPurchase from '@/components/transactions/BrainCoinsPurchase.vue'
 import GameHistory from '@/components/history/GameHistory.vue'
 import TransactionHistory from '@/components/history/TransactionHistory.vue'
-import Chat from '@/components/chat/Chat.vue'
+import MultiplayerGames from '@/components/multiplayer/MultiplayerGames.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -91,8 +91,8 @@ const router = createRouter({
       component: Statistics
     },
     {
-      path: '/chat',
-      component: Chat
+      path: '/multiplayer',
+      component: MultiplayerGames
     },
     {
       path: '/testers',
