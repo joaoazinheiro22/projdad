@@ -1,14 +1,36 @@
 <script setup>
-import { useTemplateRef, provide, ref } from 'vue';
+import { useTemplateRef, provide, ref, inject } from 'vue';
 import Toaster from './components/ui/toast/Toaster.vue';
 import { useAuthStore } from '@/stores/auth';
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import GlobalInputDialog from './components/common/GlobalInputDialog.vue';
 import router from './router';
+import { useChatStore } from '@/stores/chat';
 
+const storeChat = useChatStore()
+const socket = inject('socket')
 const authStore = useAuthStore()
 const isGameScoresDropdownOpen = ref(false)
 const isHistoryDropdownOpen = ref(false)
+
+let userDestination = null 
+
+socket.on('privateMessage', (messageObj) => { 
+userDestination = messageObj.user    
+inputDialog.value.open( 
+handleMessageFromInputDialog, 
+'Message from ' + messageObj.user.name, 
+`This is a private message sent by ${messageObj?.user?.name}!`, 
+'Reply Message', '', 
+'Close', 'Reply', 
+messageObj.message 
+) 
+})
+
+const handleMessageFromInputDialog = (message) => { 
+storeChat.sendPrivateMessageToUser(userDestination, message) 
+} 
+
 
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
