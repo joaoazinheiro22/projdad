@@ -1,16 +1,42 @@
 <script setup>
-import { useTemplateRef, provide, ref } from 'vue';
+import { useTemplateRef, provide, ref, inject } from 'vue';
 import Toaster from './components/ui/toast/Toaster.vue';
 import { useAuthStore } from '@/stores/auth';
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+import GlobalInputDialog from './components/common/GlobalInputDialog.vue';
 import router from './router';
+import { useChatStore } from '@/stores/chat';
 
+const storeChat = useChatStore()
+const socket = inject('socket')
 const authStore = useAuthStore()
 const isGameScoresDropdownOpen = ref(false)
 const isHistoryDropdownOpen = ref(false)
 
+let userDestination = null 
+
+socket.on('privateMessage', (messageObj) => { 
+userDestination = messageObj.user    
+inputDialog.value.open( 
+handleMessageFromInputDialog, 
+'Message from ' + messageObj.user.name, 
+`This is a private message sent by ${messageObj?.user?.name}!`, 
+'Reply Message', '', 
+'Close', 'Reply', 
+messageObj.message 
+) 
+})
+
+const handleMessageFromInputDialog = (message) => { 
+storeChat.sendPrivateMessageToUser(userDestination, message) 
+} 
+
+
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
+
+const inputDialog = useTemplateRef('input-dialog')
+provide('inputDialog', inputDialog)
 
 const logoutConfirmed = () => {
   authStore.logout()
@@ -51,6 +77,7 @@ const toggleHistoryDropdown = () => {
 <template>
   <Toaster />
   <GlobalAlertDialog ref="alert-dialog"></GlobalAlertDialog>
+  <GlobalInputDialog ref="input-dialog"></GlobalInputDialog>
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,6 +92,11 @@ const toggleHistoryDropdown = () => {
               class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               active-class="text-blue-600 font-semibold">
               WebSockets Tester
+            </RouterLink>
+            <RouterLink to="/multiplayer"
+              class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              active-class="text-blue-600 font-semibold">
+              Multiplayer
             </RouterLink>
             <RouterLink to="/statistics"
               class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"

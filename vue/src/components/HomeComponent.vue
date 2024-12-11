@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { onMounted } from 'vue';
 
 const router = useRouter();
 
@@ -19,6 +20,10 @@ const goToUserProfile = (id) => {
 
 // Auth store
 const authStore = useAuthStore();
+
+onMounted(() => {
+  authStore.restoreToken();
+});
 
 </script>
 
