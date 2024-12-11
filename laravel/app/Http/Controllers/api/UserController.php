@@ -48,14 +48,9 @@ class UserController extends Controller
 
     public function updateCoins(UpdateCoinsRequest $request, User $user)
     {
-        $oldBalance = $user->brain_coins_balance;
         $user->brain_coins_balance = $request->validated()['coins'];
         $user->save();
 
-        $diff = $user->brain_coins_balance - $oldBalance;
-        if ($diff > 0) {
-            Notification::send($user, new CoinsUpdatedNotification($diff));
-        }
         return new UserResource($user);
     }
 

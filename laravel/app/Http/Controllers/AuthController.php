@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdateUserRequest;
+
 
 class AuthController extends Controller
 {
@@ -94,26 +98,55 @@ class AuthController extends Controller
         return response()->json(['token' => $token]);
     }
 
-    public function updateUser(Request $request)
+    public function updateUser(UpdateUserRequest $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
-        $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'nickname' => 'sometimes|string|max:255',
-            'password' => 'sometimes|string|min:1',
-            'photo_filename' => 'sometimes|nullable|string',
-        ]);
+        $validatedData = $request->validated();
 
-        if (isset($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
+        if (!empty($validatedData['nickname'])) {
+            $user->nickname = $validatedData['nickname'];
+        }
+        if (!empty($validatedData['name'])) {
+            $user->name = $validatedData['name'];
+        }
+        if (!empty($validatedData['password'])) {
+            $user->password = Hash::make($validatedData['password']);
         }
 
-        $user->update($validatedData);
+        if (isset($validatedData['photo_filename'])) {
 
-        return response()->json(['user' => $user], 200);
+            // Update the photo filename in the database
+            $user->photo_filename = $validatedData['photo_filename'];
+        }
+
+        // Save the user
+        $user->save();
+
+        // Return the updated user
+        return new UserResource($user);
     }
+
+
+    public function uploadPhoto(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        // Use the original filename
+        $photoFile = $request->file('photo');
+        $filename = $photoFile->getClientOriginalName();
+
+        // Store the photo in the storage/public/photos directory
+        $photoFile->storeAs('photos', $filename, 'public');
+
+        // Return the filename
+        return response()->json([
+            'photo_filename' => $filename
+        ]);
+    }
+
     /*
     public function deleteUser()
     {

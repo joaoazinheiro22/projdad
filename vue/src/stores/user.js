@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
     const router = useRouter()
     const { toast } = useToast()
     const storeError = useErrorStore()
+    const loggedInUserId = ref(null)
 
     const users = ref([])
     const filterByType = ref(null)
@@ -30,7 +31,7 @@ export const useUserStore = defineStore('user', () => {
             )
         }
     }
-    
+
     const totalUsers = computed(() => {
         return users.value ? users.value.length : 0
     })
@@ -101,8 +102,10 @@ export const useUserStore = defineStore('user', () => {
                 action: h(ToastAction, {
                     altText: `Open new user`,
                     onclick: () => {
-                        router.push({ name: 'updateUser', 
-                                      params: {id: response.data.data.id} })
+                        router.push({
+                            name: 'updateUser',
+                            params: { id: response.data.data.id }
+                        })
                     }
                 }, {
                     default: () => `Open new user`,
@@ -111,24 +114,6 @@ export const useUserStore = defineStore('user', () => {
             return response.data.data
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error inserting user!')
-            return false
-        }
-    }
-
-    const updateUser = async (user) => {
-        storeError.resetMessages()
-        try {
-            const response = await axios.put('users/' + user.id, user)
-            const index = getIndexOfUser(user.id)
-            if (index > -1) {
-                users.value[index] = Object.assign({}, response.data.data)
-            }
-            toast({
-                description: 'User has been updated correctly!',
-            })
-            return response.data.data
-        } catch (e) {
-            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating user!')
             return false
         }
     }
@@ -156,10 +141,40 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    const fetchLoggedInUserId = async () => {
+        try {
+            const response = await axios.get('users/me')
+            loggedInUserId.value = response.data.id
+        } catch (error) {
+            console.error('Failed to fetch logged-in user:', error)
+            storeError.setErrorMessages(
+                error.response.data.message,
+                error.response.data.errors,
+                error.response.status,
+                'Failed to fetch logged-in user'
+            )
+        }
+    }
+
     const deleteUser = async (user) => {
         storeError.resetMessages()
+    
+        if (!loggedInUserId.value) {
+            await fetchLoggedInUserId();
+        }
+
+        if (user.id === loggedInUserId.value && user.type === 'A') {
+            storeError.setErrorMessages(
+                "Administrators cannot delete their own account!", null, 403, "Action not allowed")
+            toast({
+                description: `You cannot delete your own admin account!`,
+                variant: 'error',
+            })
+            return false
+        }
+    
         try {
-            await axios.delete('users/' + user.id)
+            await axios.delete('users/' + user.id + '/delete')
             const index = getIndexOfUser(user.id)
             if (index > -1) {
                 users.value.splice(index, 1)
@@ -174,6 +189,6 @@ export const useUserStore = defineStore('user', () => {
     return {
         users, getUsers, totalUsers, totalFilteredUsers, filteredUsers,
         filterDescription, filterByType, filterByBlocked,
-        fetchUsers, fetchUser, insertUser, updateUser, deleteUser, toggleBlockedUser
+        fetchUsers, fetchUser, insertUser, fetchLoggedInUserId, deleteUser, toggleBlockedUser
     }
 })

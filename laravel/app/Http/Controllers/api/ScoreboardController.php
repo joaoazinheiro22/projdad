@@ -146,7 +146,7 @@ class ScoreboardController extends Controller
         $userStats['win_rate'] = $totalGames > 0 ? number_format(($victories / $totalGames) * 100, 2) : '0.00';
         return response()->json($userStats);
     }
-    
+
 
     public function getUserBestTimes($userId)
     {
@@ -156,6 +156,7 @@ class ScoreboardController extends Controller
             ->select(
                 'boards.board_cols',
                 'boards.board_rows',
+                'games.began_at',
                 'games.total_time',
                 'games.created_at',
                 'games.total_turns_winner'
@@ -182,6 +183,7 @@ class ScoreboardController extends Controller
                 'boards.board_cols',
                 'boards.board_rows',
                 'games.total_turns_winner',
+                'games.began_at',
                 'games.created_at',
                 'games.total_time'
             )

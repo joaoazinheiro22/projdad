@@ -7,10 +7,10 @@ import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import 'primeicons/primeicons.css'
 
 const userStore = useUserStore()
-// const toast = useTemplateRef('toaster')
+const toast = useTemplateRef('toaster')
 
-// const alertDialog = useTemplateRef('alert-dialog')
-// provide('alertDialog', alertDialog)
+const alertDialog = useTemplateRef('alert-dialog')
+provide('alertDialog', alertDialog)
 
 const currentPage = ref(1)
 const itemsPerPage = 10
@@ -55,21 +55,21 @@ const toggleBlockedStatus = async (user) => {
     }
 }
 
-// const deleteAccountConfirmed = async (user) => {
-//     await userStore.deleteUser(user);
-// }
+const deleteAccountConfirmed = async (user) => {
+    await userStore.deleteUser(user);
+}
 
-// const deleteAccount = (user) => {
-//     alertDialog.value.open(() => deleteAccountConfirmed(user),
-//         'Delete confirmation?', 'Cancel', `Yes, I want to delete this account`,
-//         `Are you sure you want to delete this account? This action is irreversable.`)
-// }
+const deleteAccount = (user) => {
+    alertDialog.value.open(() => deleteAccountConfirmed(user),
+        'Delete confirmation?', 'Cancel', `Yes, I want to delete this account`,
+        `Are you sure you want to delete this account? This action is irreversable.`)
+}
 
 </script>
 
 <template>
-    <!-- <Toaster />
-    <GlobalAlertDialog ref="alert-dialog"></GlobalAlertDialog> -->
+    <Toaster />
+    <GlobalAlertDialog ref="alert-dialog"></GlobalAlertDialog>
     <div class="max-w-4xl mx-auto py-12">
         <h1 class="text-3xl font-bold mb-8 text-center">User List</h1>
 
