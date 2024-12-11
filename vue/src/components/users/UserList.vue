@@ -5,14 +5,19 @@ import { Button } from '@/components/ui/button'
 import Toaster from '@/components/ui/toast/Toaster.vue';
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useErrorStore } from '@/stores/error'
 import 'primeicons/primeicons.css'
 
 const userStore = useUserStore()
 const toast = useTemplateRef('toaster')
 const authStore = useAuthStore()
+const errorStore = useErrorStore()
 
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
+const showRemoveAccountConfirmation = ref(false)
+const removeAccountPassword = ref('')
+const userToDelete = ref(null)
 
 const currentPage = ref(1)
 const itemsPerPage = 10
@@ -57,14 +62,39 @@ const toggleBlockedStatus = async (user) => {
     }
 }
 
-const deleteAccountConfirmed = async (user) => {
-    await userStore.deleteUser(user);
+const initiateAccountRemoval = (user) => {
+    showRemoveAccountConfirmation.value = true
+    removeAccountPassword.value = ''
+    errorStore.resetMessages()
+    userToDelete.value = user
 }
 
-const deleteAccount = (user) => {
-    alertDialog.value.open(() => deleteAccountConfirmed(user),
-        'Delete confirmation?', 'Cancel', `Yes, I want to delete this account`,
-        `Are you sure you want to delete this account? This action is irreversable.`)
+const confirmRemoveAccount = async () => {
+    errorStore.resetMessages()
+
+    if (!removeAccountPassword.value) {
+        errorStore.setErrorMessages('Please enter your password to confirm account removal')
+        return
+    }
+
+    try {
+        const success = await userStore.deleteUser(userToDelete.value)
+        if (success) {
+            showRemoveAccountConfirmation.value = false
+            toast({
+                description: 'User account removed successfully',
+            })
+        }
+    } catch (error) {
+        console.log('Error removing account:', error.response?.data)
+    }
+}
+
+const cancelRemoveAccount = () => {
+    showRemoveAccountConfirmation.value = false
+    removeAccountPassword.value = ''
+    errorStore.resetMessages()
+    userToDelete.value = null
 }
 
 </script>
@@ -97,7 +127,7 @@ const deleteAccount = (user) => {
                             </button>
                         </td>
                         <td v-if="authStore.userId !== user.id" class="py-2 border-b text-center">
-                            <button @click="deleteAccount(user)" class="text-red-500 hover:text-red-700">
+                            <button @click="initiateAccountRemoval(user)" class="text-red-500 hover:text-red-700">
                                 <i class="pi pi-trash text-lg"></i>
                             </button>
                         </td>
@@ -122,6 +152,29 @@ const deleteAccount = (user) => {
         </div>
         <div v-else class="text-center py-8 text-gray-500">
             <p>No users found.</p>
+        </div>
+        <!-- Account Removal Confirmation Modal -->
+        <div v-if="showRemoveAccountConfirmation"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+                <h2 class="text-xl font-bold mb-4 text-red-600">Confirm User Removal</h2>
+                <p class="mb-4 text-gray-700">Enter your password to confirm user removal:</p>
+
+                <div class="space-y-2 mb-4">
+                    <input type="password" v-model="removeAccountPassword" placeholder="Enter your password"
+                        class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <ErrorMessage :errorMessage="errorStore.message"></ErrorMessage>
+                </div>
+
+                <div class="flex justify-between">
+                    <Button @click="confirmRemoveAccount" class="bg-red-500 hover:bg-red-700 text-white">
+                        Confirm Removal
+                    </Button>
+                    <Button @click="cancelRemoveAccount" class="bg-gray-300 hover:bg-gray-400 text-gray-800">
+                        Cancel
+                    </Button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
