@@ -7,12 +7,15 @@ import ErrorMessage from '@/components/common/ErrorMessage.vue'
 import { useGameStore } from '@/stores/game'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
+import { useToast } from '@/components/ui/toast/use-toast'
+
 
 const router = useRouter()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const errorStore = useErrorStore()
 const gameStore = useGameStore()
+const { toast } = useToast()
 
 const userProfile = ref({
     id: authStore.userId,
@@ -72,11 +75,12 @@ const confirmRemoveAccount = async (user) => {
     try {
         const success = await userStore.deleteUser(user);
         if (success) {
-            toast({
-                description: 'Account removed successfully',
-            })
-            router.push('/');
+        toast({
+            description: 'Account removed successfully',
+        });
+        router.push('/');
         }
+        
     } catch (error) {
         console.log('Error removing account:', error.response?.data)
     }
@@ -149,7 +153,7 @@ onMounted(async () => {
                 </div>
 
                 <div class="flex justify-between">
-                    <Button @click="confirmRemoveAccount" class="bg-red-500 hover:bg-red-700 text-white">
+                    <Button @click="confirmRemoveAccount(userProfile)" class="bg-red-500 hover:bg-red-700 text-white">
                         Confirm Removal
                     </Button>
                     <Button @click="cancelRemoveAccount" class="bg-gray-300 hover:bg-gray-400 text-gray-800">

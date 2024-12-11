@@ -173,6 +173,8 @@ export const useUserStore = defineStore('user', () => {
             return false
         }
     
+        console.log('Deleting thisssss user:', user)
+
         try {
             await axios.delete('users/' + user.id + '/delete')
             const index = getIndexOfUser(user.id)
