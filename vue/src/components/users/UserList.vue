@@ -105,6 +105,12 @@ const cancelRemoveAccount = () => {
     <div class="max-w-4xl mx-auto py-12">
         <h1 class="text-3xl font-bold mb-8 text-center">User List</h1>
 
+        <!-- Button to create an admin -->
+        <div class="flex justify-end mb-4">
+            <RouterLink to="/register" class="bg-blue-500 text-white hover:bg-blue-700 rounded-full px-4 py-2">
+                Create Administrator
+            </RouterLink>
+        </div>
         <div v-if="userStore.users.length > 0" class="bg-white w-full">
             <table class="min-w-full bg-white border border-gray-300">
                 <thead>

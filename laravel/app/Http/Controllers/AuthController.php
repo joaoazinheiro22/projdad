@@ -49,6 +49,25 @@ class AuthController extends Controller
         return response()->json(['token' => $token, 'user' => $user], 201);
     }
 
+    public function registerAdmin(RegisterRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'nickname' => $validatedData['nickname'],
+            'password' => Hash::make($validatedData['password']),
+            'photo_filename' => $validatedData['photo_filename'] ?? null,
+            'brain_coins_balance' => 10,
+            'type' => 'A',
+        ]);
+
+        $token = $user->createToken('authToken', ['*'], now()->addHours(2))->plainTextToken;
+
+        return response()->json(['token' => $token, 'user' => $user], 201);
+    }
+
 
     public function login(LoginRequest $request)
     {

@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);
     Route::post('auth/upload-photo', [AuthController::class, 'uploadPhoto']);
     Route::post('auth/refreshtoken', [AuthController::class, 'refreshToken']);
+    Route::post('/auth/registerAdmin', [AuthController::class, "registerAdmin"])->can('viewAny', User::class);
 
     Route::get('games/history', [GameController::class, 'getUserGameHistory']);
     Route::post('/games', [GameController::class, 'store']);
