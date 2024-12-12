@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
@@ -11,20 +11,7 @@ const props = defineProps({
 
 const userStore = useUserStore()
 
-const filterByBlocked = defineModel('filterByBlocked', {default: null})
-const filterByType = defineModel('filterByType', {default: null})
-
-const listOfBlockedStatus = ref([
-    null,
-    {
-        'blocked': false,
-        'filterDescription': 'Active Users'
-    },
-    {
-        'blocked': true,
-        'filterDescription': 'Blocked Users'
-    },
-])
+const filterByType = ref(null)
 
 const listOfUserTypes = ref([
     null,
@@ -39,15 +26,21 @@ const listOfUserTypes = ref([
 ])
 
 const resetFilter = () => {
-    filterByBlocked.value = null
     filterByType.value = null
+    userStore.applyFilters()
 }
 
 const applyFilter = () => {
-    
-
+    userStore.filterByType = filterByType.value
+    userStore.applyFilters()
     console.log('Filtering applied')
 }
+
+// Watch for changes in filter values and apply filters automatically
+watch(filterByType, () => {
+    applyFilter()
+})
+
 </script>
 
 <template>
@@ -67,19 +60,6 @@ const applyFilter = () => {
                 </select>
             </div>
             
-            <div class="py-1 text-sm leading-10 flex shrink-0 space-x-1 ">
-                <label for="input_filter_blocked_id" class="font-medium">Status</label>
-                <select 
-                    id="input_filter_blocked_id" 
-                    class="p-2 grow h-10 border-gray-300 border rounded-lg text-base"
-                    v-model="filterByBlocked"
-                >
-                    <option v-for="b in listOfBlockedStatus" :key="b?.blocked ?? 'null'" :value="b?.blocked ?? null">
-                        {{ b ? b.filterDescription : '-- Any --' }}
-                    </option>
-                </select>
-            </div>
-            
             <button 
                 type="button" 
                 class="my-1 w-10 h-10 shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-md border border-transparent bg-gray-400 text-white hover:bg-gray-500 focus:outline-none focus:bg-gray-500"
@@ -89,7 +69,7 @@ const applyFilter = () => {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </button>
-            <button @v-show="showApplyButton" type="button" class="my-1  w-28 h-10 shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-md 
+            <button v-show="showApplyButton" type="button" class="my-1  w-28 h-10 shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-bold rounded-md 
                                         border border-transparent bg-blue-600 text-white 
                                         hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
                     @click.prevent="applyFilter">

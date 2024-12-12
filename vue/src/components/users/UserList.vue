@@ -22,23 +22,20 @@ const userToDelete = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = 10
 
-
 onMounted(async () => {
     await userStore.getUsers()
+    userStore.applyFilters() // Apply filters after fetching users
 })
-
 
 const totalPages = computed(() => {
-    return Math.ceil(userStore.users.length / itemsPerPage)
+    return Math.ceil(userStore.filteredUsers.length / itemsPerPage)
 })
-
 
 const paginatedUsers = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     const end = start + itemsPerPage
-    return userStore.users.slice(start, end)
+    return userStore.filteredUsers.slice(start, end)
 })
-
 
 const prevPage = () => {
     if (currentPage.value > 1) {
@@ -51,7 +48,6 @@ const nextPage = () => {
         currentPage.value++
     }
 }
-
 
 const toggleBlockedStatus = async (user) => {
     const result = await userStore.toggleBlockedUser(user)
@@ -111,7 +107,7 @@ const cancelRemoveAccount = () => {
                 Create Administrator
             </RouterLink>
         </div>
-        <div v-if="userStore.users.length > 0" class="bg-white w-full">
+        <div v-if="userStore.filteredUsers.length > 0" class="bg-white w-full">
             <table class="min-w-full bg-white border border-gray-300">
                 <thead>
                     <tr>

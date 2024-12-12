@@ -16,6 +16,7 @@ export const useUserStore = defineStore('user', () => {
     const users = ref([])
     const filterByType = ref(null)
     const filterByBlocked = ref(null)
+    const filteredUsers = ref([])
 
     const getUsers = async () => {
         try {
@@ -40,34 +41,22 @@ export const useUserStore = defineStore('user', () => {
         return filteredUsers.value ? filteredUsers.value.length : 0
     })
 
-
-    // Private helper function for filtering users
-    const userInFilter = (user) => {
-        if (filterByBlocked.value !== null) {
-            if (filterByBlocked.value !== user.blocked) {
-                return false
+          const applyFilters = () => {
+        filteredUsers.value = users.value.filter(user => {
+            if (filterByType.value) {
+                return user.type === filterByType.value
             }
-        }
-        if (filterByType.value) {
-            if (filterByType.value !== user.type) {
-                return false
-            }
-        }
-        return true
+            return true
+        })
     }
-
-    const filteredUsers = computed(() => users.value.filter(userInFilter))
 
     const filterDescription = computed(() => {
         if (!filterByBlocked.value && !filterByType.value) {
             return 'All users'
         }
         let description = ''
-        if (filterByBlocked.value !== null) {
-            description += filterByBlocked.value ? ' that are blocked' : ' that are not blocked'
-        }
         if (filterByType.value) {
-            description += ` of type ${filterByType.value}`
+            description += `Users of type ${filterByType.value}`
         }
         return description
     })
@@ -191,6 +180,6 @@ export const useUserStore = defineStore('user', () => {
     return {
         users, getUsers, totalUsers, totalFilteredUsers, filteredUsers,
         filterDescription, filterByType, filterByBlocked,
-        fetchUsers, fetchUser, insertUser, fetchLoggedInUserId, deleteUser, toggleBlockedUser
+        fetchUsers, fetchUser, insertUser, fetchLoggedInUserId, deleteUser, toggleBlockedUser, applyFilters
     }
 })
