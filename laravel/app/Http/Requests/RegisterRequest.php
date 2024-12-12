@@ -27,6 +27,7 @@ class RegisterRequest extends FormRequest
             'nickname' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:3|confirmed', // confirmed significa que requere um campo password_confirmation
             'photo' => 'nullable|image|max:2048',
+            'type' => 'string|in:admin,user',
         ];
     }
 }

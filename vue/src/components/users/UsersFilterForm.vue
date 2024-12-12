@@ -44,6 +44,8 @@ const resetFilter = () => {
 }
 
 const applyFilter = () => {
+    
+
     console.log('Filtering applied')
 }
 </script>

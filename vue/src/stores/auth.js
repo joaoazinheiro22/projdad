@@ -94,6 +94,29 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const registerAdmin = async (userData) => {
+    try {
+      const response = await axios.post('auth/registerAdmin', userData)
+      return response.data
+    } catch (error) {
+      console.error('Admin Registration failed:', error)
+      
+      // If there are specific error responses from the backend, 
+      // you might want to handle them more specifically
+      if (error.response && error.response.data) {
+        const errorStore = useErrorStore()
+        errorStore.setErrorMessages(
+          error.response.data.message,
+          error.response.data.errors,
+          error.response.status,
+          'Registration Error!'
+        )
+      }
+      
+      throw error // Re-throw to allow handling in the component
+    }
+  }
+
   const login = async (credentials) => {
     storeError.resetMessages();
     try {
@@ -262,6 +285,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     register,
+    registerAdmin,
     removeAccount,
     restoreToken,
     updateUser,

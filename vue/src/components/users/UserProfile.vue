@@ -137,7 +137,7 @@ onMounted(async () => {
             <Button type="submit">Update Profile</Button>
         </form>
 
-        <Button @click="initiateAccountRemoval" class="mt-4 bg-red-500 hover:bg-red-700 text-white">Remove Account</Button>
+        <Button v-if="!authStore.userAdmin" @click="initiateAccountRemoval" class="mt-4 bg-red-500 hover:bg-red-700 text-white">Remove Account</Button>
 
         <!-- Account Removal Confirmation Modal -->
         <div v-if="showRemoveAccountConfirmation"
