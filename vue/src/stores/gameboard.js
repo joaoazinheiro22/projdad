@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from './user'
+import { errorMessages } from 'vue/compiler-sfc'
+import { toast } from '@/components/ui/toast'
 
 export const useGameBoardStore = defineStore('gameboard', () => {
     const authStore = useAuthStore()
@@ -153,26 +155,25 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         }
     }
 
+    let canExecute = true;
     const revealHint = async () => {
-        // const user = userStore.fetchUser(authStore.userId)
-        // console.log("User: ", user.id)
-
-        // if (!user || user.brain_coins_balance < 1) {
-        //     console.error('Insufficient coins');
-        //     return;
-        // }
-
+        if (!canExecute) { // para impedir varias execucoes enquanto a carta vira
+            return;
+        }
+        canExecute = false;
         try {
             const user = await userStore.fetchUser(authStore.userId);
             let coins = authStore.userBrainCoinsBalance
-            console.log("User: ", user)
-            console.log("Coins: ", coins)
-            const coinUpdateResponse = await userStore.updateCoins(user.id, coins - 1);
+            if (coins < 1) {
+                return
+            }
+            const coinUpdateResponse = await userStore.updateCoins(user, coins - 1);
 
             if (!coinUpdateResponse) {
                 console.error('Coin deduction failed');
                 return;
             }
+
             const unmatchedCards = cards.value.filter(card => !matchedCards.value.includes(card.id) && !card.isFlipped);
 
             const matchingPair = unmatchedCards.reduce((pair, card) => {
@@ -187,6 +188,9 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         } catch (error) {
             console.error('Error revealing hint:', error)
         }
+        setTimeout(() => {
+            canExecute = true;
+        }, 1000);
     }
 
 

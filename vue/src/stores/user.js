@@ -147,8 +147,10 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
-    const updateCoins = async (userId, coins) => {
+    const updateCoins = async (user, coins) => {
         storeError.resetMessages()
+        const userId = user.id
+        console.log("AuthStore user.js: ", authStore.user)
         try {
             const token = localStorage.getItem('authToken'); // Replace with your token value
             const response = await axios.put(
@@ -161,19 +163,10 @@ export const useUserStore = defineStore('user', () => {
                 }
             );
 
-            const index = getIndexOfUser(userId)
-            if (index > -1) {
-                users.value[index] = {
-                    ...users.value[index], // Keep other user properties untouched
-                    brain_coins_balance: response.data.data.brain_coins_balance,
-                };
-            }
+            authStore.user.brain_coins_balance = response.data.data.brain_coins_balance;
 
-            console.log('Updated user coins:', response.data.data)
-            return response.data.data
+            return response.data.data;
         } catch (e) {
-            console.log('Payload:', { coins });
-
             storeError.setErrorMessages('Error updating user coins!')
             return false
         }

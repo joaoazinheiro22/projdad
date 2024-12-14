@@ -100,7 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
       return response.data
     } catch (error) {
       console.error('Admin Registration failed:', error)
-      
+
       // If there are specific error responses from the backend, 
       // you might want to handle them more specifically
       if (error.response && error.response.data) {
@@ -112,7 +112,7 @@ export const useAuthStore = defineStore('auth', () => {
           'Registration Error!'
         )
       }
-      
+
       throw error // Re-throw to allow handling in the component
     }
   }
@@ -122,7 +122,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const responseLogin = await axios.post('auth/login', credentials);
       token.value = responseLogin.data.token;
-      localStorage.setItem('authToken', token.value); 
+      localStorage.setItem('authToken', token.value);
       console.log('token', token.value);
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value;
       const responseUser = await axios.get('users/me');
@@ -289,6 +289,6 @@ export const useAuthStore = defineStore('auth', () => {
     removeAccount,
     restoreToken,
     updateUser,
-    uploadPhoto
+    uploadPhoto,
   }
 })
