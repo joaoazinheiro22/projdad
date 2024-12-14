@@ -6,12 +6,14 @@ import { useRouter } from 'vue-router'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 import { h } from 'vue'
+import { useAuthStore } from './auth'
 
 export const useUserStore = defineStore('user', () => {
     const router = useRouter()
     const { toast } = useToast()
     const storeError = useErrorStore()
     const loggedInUserId = ref(null)
+    const authStore = useAuthStore()
 
     const users = ref([])
     const filterByType = ref(null)
@@ -41,7 +43,7 @@ export const useUserStore = defineStore('user', () => {
         return filteredUsers.value ? filteredUsers.value.length : 0
     })
 
-          const applyFilters = () => {
+    const applyFilters = () => {
         filteredUsers.value = users.value.filter(user => {
             if (filterByType.value) {
                 return user.type === filterByType.value
@@ -113,7 +115,7 @@ export const useUserStore = defineStore('user', () => {
         }
         storeError.resetMessages()
 
-        if (user.type === 'A'){
+        if (user.type === 'A') {
             storeError.setErrorMessages("You can't block administrators!", 'Error blocking user!')
             return false
         }
@@ -145,9 +147,41 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    const updateCoins = async (userId, coins) => {
+        storeError.resetMessages()
+        try {
+            const token = localStorage.getItem('authToken'); // Replace with your token value
+            const response = await axios.put(
+                'users/' + userId + '/coins',
+                { coins },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            const index = getIndexOfUser(userId)
+            if (index > -1) {
+                users.value[index] = {
+                    ...users.value[index], // Keep other user properties untouched
+                    brain_coins_balance: response.data.data.brain_coins_balance,
+                };
+            }
+
+            console.log('Updated user coins:', response.data.data)
+            return response.data.data
+        } catch (e) {
+            console.log('Payload:', { coins });
+
+            storeError.setErrorMessages('Error updating user coins!')
+            return false
+        }
+    }
+
     const deleteUser = async (user) => {
         storeError.resetMessages()
-    
+
         if (!loggedInUserId.value) {
             await fetchLoggedInUserId();
         }
@@ -161,7 +195,7 @@ export const useUserStore = defineStore('user', () => {
             })
             return false
         }
-    
+
         console.log('Deleting thisssss user:', user)
 
         try {
@@ -180,6 +214,6 @@ export const useUserStore = defineStore('user', () => {
     return {
         users, getUsers, totalUsers, totalFilteredUsers, filteredUsers,
         filterDescription, filterByType, filterByBlocked,
-        fetchUsers, fetchUser, insertUser, fetchLoggedInUserId, deleteUser, toggleBlockedUser, applyFilters
+        fetchUsers, fetchUser, insertUser, fetchLoggedInUserId, deleteUser, toggleBlockedUser, applyFilters, updateCoins
     }
 })

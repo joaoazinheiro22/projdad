@@ -3,11 +3,14 @@ import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth'
 import { useGameBoardStore } from '@/stores/gameboard'
+import { useToast } from '@/components/ui/toast/use-toast';
+
 
 const authStore = useAuthStore()
 const gameboardStore = useGameBoardStore()
 const route = useRoute();
 const router = useRouter();
+const { toast } = useToast();
 
 const mode = computed(() => route.params.mode);
 
@@ -25,6 +28,8 @@ const initGame = () => {
   gameboardStore.initializeGame(mode.value);
 };
 
+const errorMessage = computed(() => gameboardStore.errorMessage);
+
 // Call initialization when component is created
 initGame();
 
@@ -35,7 +40,12 @@ initGame();
     <h1 class="text-3xl font-bold mb-4">Game Mode: {{ mode }}</h1>
     <h2 class="mb-2">Timer: {{ gameboardStore.formattedTime }}</h2>
     <h2 class="mb-4">Number of turns: {{ gameboardStore.turnCount }} </h2>
-    <h2 v-if="authStore.user" class="mb-4">Username: {{ authStore.userFirstLastName }} </h2>
+    <h2 v-if="authStore.user" class="mb-2">Username: {{ authStore.userFirstLastName }} </h2>
+    <button v-if="authStore.user" @click="gameboardStore.revealHint()" class="bg-blue-500 text-white px-4 py-2 rounded mr-2 mb-4">Hint</button>
+
+    <!-- <div v-if="errorMessage" class="text-red-500 text-sm">
+                {{ errorMessage }}
+            </div> -->
 
     <div class="grid gap-2 w-full max-w-2xl p-4 rounded-lg bg-gray-100" :style="{
       gridTemplateRows: `repeat(${gameboardStore.gridConfig.rows}, 1fr)`,

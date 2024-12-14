@@ -2,9 +2,11 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from './user'
 
 export const useGameBoardStore = defineStore('gameboard', () => {
     const authStore = useAuthStore()
+    const userStore = useUserStore()
 
     // Game State
     const cards = ref([])
@@ -151,6 +153,43 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         }
     }
 
+    const revealHint = async () => {
+        // const user = userStore.fetchUser(authStore.userId)
+        // console.log("User: ", user.id)
+
+        // if (!user || user.brain_coins_balance < 1) {
+        //     console.error('Insufficient coins');
+        //     return;
+        // }
+
+        try {
+            const user = await userStore.fetchUser(authStore.userId);
+            let coins = authStore.userBrainCoinsBalance
+            console.log("User: ", user)
+            console.log("Coins: ", coins)
+            const coinUpdateResponse = await userStore.updateCoins(user.id, coins - 1);
+
+            if (!coinUpdateResponse) {
+                console.error('Coin deduction failed');
+                return;
+            }
+            const unmatchedCards = cards.value.filter(card => !matchedCards.value.includes(card.id) && !card.isFlipped);
+
+            const matchingPair = unmatchedCards.reduce((pair, card) => {
+                if (pair) return pair; // If a pair is already found, return it
+                const match = unmatchedCards.find(other => other.id === card.id && other.uniqueKey !== card.uniqueKey);
+                return match ? [card, match] : null;
+            }, null);
+
+            if (matchingPair) {
+                matchingPair.forEach(card => { flipCard(card) });
+            }
+        } catch (error) {
+            console.error('Error revealing hint:', error)
+        }
+    }
+
+
     const checkGameCompletion = () => {
         const allCardsFlipped = cards.value.every(card => card.isFlipped)
 
@@ -205,6 +244,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         flipCard,
         resetGame,
         startTimer,
-        stopTimer
+        stopTimer,
+        revealHint
     }
 })

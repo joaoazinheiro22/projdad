@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{user}/coins', [UserController::class, 'updateCoins']);
     Route::patch('users/{user}/blocked', [UserController::class, 'updateBlocked']);
     Route::delete('users/{user}/delete', [UserController::class, 'destroy']);
+    Route::get('users/{user}', [UserController::class, 'show']);
 
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);

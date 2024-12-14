@@ -1,6 +1,6 @@
 <script setup>
 import { useScoreBoardStore } from '@/stores/scoreboard';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 
 const scoreboardStore = useScoreBoardStore();
 
@@ -8,12 +8,18 @@ const fetchScores = async (cols, rows) => {
     await scoreboardStore.fetchSinglePlayerBestTimes(cols, rows);
     await scoreboardStore.fetchSinglePlayerMinTurns(cols, rows);
     await scoreboardStore.fetchTopMultiplayerVictories();
+    selectedDimension.value = `${cols}x${rows}`;
 };
 
 
 const singlePlayerBestTimes = computed(() => scoreboardStore.singlePlayerBestTimes);
 const singlePlayerMinTurns = computed(() => scoreboardStore.singlePlayerMinTurns);
 const topMultiplayerVictories = computed(() => scoreboardStore.topMultiplayerVictories);
+const selectedDimension = ref('3x4');
+
+onMounted(() => {
+    fetchScores(3, 4);
+});
 </script>
 <template>
     <div class="max-w-4xl mx-auto py-12">
@@ -21,11 +27,21 @@ const topMultiplayerVictories = computed(() => scoreboardStore.topMultiplayerVic
 
         <div class="text-center mb-8">
             <h2 class="text-xl font-bold mb-8 text-center"> Choose a board dimension </h2>
-            <button @click="fetchScores(3, 4)" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
+            <button @click="fetchScores(3, 4)" :class="{
+                'bg-blue-700 text-white': selectedDimension === '3x4',
+                'bg-blue-500 text-white': selectedDimension !== '3x4',
+                }"
+                class="px-4 py-2 rounded mr-2">
                 3x4</button>
-            <button @click="fetchScores(4, 4)" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
+            <button @click="fetchScores(4, 4)" :class="{
+                'bg-blue-700 text-white': selectedDimension === '4x4',
+                'bg-blue-500 text-white': selectedDimension !== '4x4',
+                }" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">
                 4x4</button>
-            <button @click="fetchScores(6, 6)" class="bg-blue-500 text-white px-4 py-2 rounded">
+            <button @click="fetchScores(6, 6)" :class="{
+                'bg-blue-700 text-white': selectedDimension === '6x6',
+                'bg-blue-500 text-white': selectedDimension !== '6x6',
+                }" class="bg-blue-500 text-white px-4 py-2 rounded">
                 6x6</button>
         </div>
 
