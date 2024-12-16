@@ -2,11 +2,25 @@
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { onMounted } from 'vue';
+import { useToast } from '@/components/ui/toast/use-toast';
+import { useGameStore } from '@/stores/game';
 
 const router = useRouter();
+const authStore = useAuthStore();
+const { toast } = useToast();
+const gameStore = useGameStore();
 
 // Function to navigate to the GameBoard
 const goToGameBoard = (mode) => {
+  
+  if((mode === '4x4' || mode === '6x6') && authStore.userBrainCoinsBalance < 1) {
+    toast({
+      description: 'You need at least 1 brain coin to play this mode',
+      variant: 'destructive'
+    })
+    return;
+  }
+  
   router.push({ name: 'GameBoard', params: { mode } });
 };
 
@@ -18,8 +32,6 @@ const goToUserProfile = (id) => {
   router.push({ name: 'UserProfile', params: { id } });
 };
 
-// Auth store
-const authStore = useAuthStore();
 
 onMounted(() => {
   authStore.restoreToken();

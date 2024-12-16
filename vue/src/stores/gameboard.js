@@ -91,6 +91,11 @@ export const useGameBoardStore = defineStore('gameboard', () => {
                 }
 
                 const response = await axios.post('games', gameData)
+                
+                if(gameMode !== '3x4') {
+                    authStore.user.brain_coins_balance -= 1;
+                }
+
                 currentGameId.value = response.data.data.id
             } catch (error) {
                 console.error('Error creating game:', error)
