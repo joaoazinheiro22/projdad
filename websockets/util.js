@@ -12,9 +12,7 @@ exports.createUtil = () => {
         } 
         return true 
     } 
-    return { 
-        checkAuthenticatedUser 
-    }
+    
 
     const getRoomGamesPlaying = (socket) => { 
         const rooms = socket.adapter.rooms 
