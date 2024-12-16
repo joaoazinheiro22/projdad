@@ -72,10 +72,13 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         $this->purgeExpiredTokens();
+
         $credentials = $request->validated();
+
         if (!Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
+
         $token = $request->user()->createToken('authToken', ['*'], now()->addHours(2))->plainTextToken;
         return response()->json(['token' => $token]);
     }

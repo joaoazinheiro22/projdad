@@ -11,6 +11,7 @@ export const useLobbyStore = defineStore('lobby', () => {
     const socket = inject('socket')
 
     const games = ref([])
+    const gameId = ref(null)
 
     const totalGames = computed(() => games.value.length)
 
@@ -39,14 +40,46 @@ export const useLobbyStore = defineStore('lobby', () => {
     }
 
     // add a game to the lobby
-    const addGame = () => {
-        storeError.resetMessages()
-        socket.emit('addGame', (response) => {
-            if (webSocketServerResponseHasError(response)) {
-                return
+    const addGame = async (boardId) => {
+
+        try {
+
+            storeError.resetMessages()
+
+
+            const gameData = {
+                type: 'M',
+                created_user_id: storeAuth.userId,
+                status: 'PE',
+                board_id: boardId,
+                began_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
             }
-        })
+
+            const response = await axios.post('games', gameData)
+            console.log('Game created:', response.data.data.id)
+            const dbGameId = response.data.data.id
+
+
+            socket.emit('addGame', dbGameId, (response) => {
+                if (webSocketServerResponseHasError(response)) {
+                    return
+                }
+                gameId.value = dbGameId
+            })
+
+        } catch (error) {
+            console.error('Failed to create game:', error)
+
+            storeError.setErrorMessages(
+                error.response?.data?.message || 'Failed to create game',
+                error.response?.data?.errors || {},
+                error.response?.status || 500
+            )
+        }
+
     }
+
+
 
     // remove a game from the lobby
     const removeGame = (id) => {
@@ -61,20 +94,20 @@ export const useLobbyStore = defineStore('lobby', () => {
     // join a game of the lobby
     const joinGame = (id) => {
         storeError.resetMessages()
-        socket.emit('joinGame', id, async (response) => {
-            // callback executed after the join is complete
+        console.log('Joining game:', id)
+
+        // Ensure we pass the raw ID value, not a ref
+        socket.emit('joinGame', Number(id), async (response) => {
             if (webSocketServerResponseHasError(response)) {
                 return
             }
-            const APIresponse = await axios.post('games', {
-                player1_id: response.player1.id,
-                player2_id: response.player2.id,
-            })
-            const newGameOnDB = APIresponse.data.data
-            newGameOnDB.player1SocketId = response.player1SocketId
-            newGameOnDB.player2SocketId = response.player2SocketId
-            // After adding the game to the DB emit a message to the server to start the game
-            socket.emit('startGame', newGameOnDB, (startedGame) => {
+
+            const APIresponse = await axios.put(`games/${id}`, { status: 'PL' })
+            const updatedGame = APIresponse.data.data
+
+            console.log('Game joined:', id)
+
+            socket.emit('startGame', updatedGame, (startedGame) => {
                 console.log('Game has started', startedGame)
             })
         })
@@ -84,7 +117,7 @@ export const useLobbyStore = defineStore('lobby', () => {
     const canRemoveGame = (game) => {
         return game.player1.id === storeAuth.userId
     }
-    
+
     // Whether the current user can join a specific game from the lobby
     const canJoinGame = (game) => {
         return storeAuth.user && game.player1.id !== storeAuth.userId
