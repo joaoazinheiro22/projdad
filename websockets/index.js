@@ -78,6 +78,7 @@ io.on('connection', (socket) => {
     }
     console.log('gameId:', gameId)
     const game = lobby.addGame(socket.data.user, socket.id, gameId)
+    console.log('Game created:', game);
     io.to('lobby').emit('lobbyChanged', lobby.getGames())
     if (callback) {
       callback(game)
@@ -87,6 +88,17 @@ io.on('connection', (socket) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return
     }
+    console.log('Available sockets:', Array.from(io.sockets.sockets.keys()));
+
+    // const player1Socket = io.sockets.sockets.get(game.player1SocketId);
+    // const player2Socket = io.sockets.sockets.get(game.player2SocketId);
+
+    // if (!player1Socket) {
+    //   console.error('Player 1 socket not found:', game.player1SocketId);
+    // }
+    // if (!player2Socket) {
+    //   console.error('Player 2 socket not found:', game.player2SocketId);
+    // }
     const game = lobby.getGame(id)
     if (socket.data.user.id == game.player1.id) {
       if (callback) {
@@ -152,6 +164,7 @@ io.on('connection', (socket) => {
     if (user && user.id) {
       socket.join('user_' + user.id)
       socket.join('lobby')
+      //console.log(`User ${user.id} has joined the lobby.`);
     }
   })
 
@@ -175,12 +188,20 @@ io.on('connection', (socket) => {
       return
     }
     const roomName = 'game_' + clientGame.id
+    console.log('Client Game:', clientGame);
     const game = gameEngine.initGame(clientGame)
     // join the 2 players to the game room 
+    console.log('Player 1 Socket ID:', game.player1SocketId);
+    console.log('Player 2 Socket ID:', game.player2SocketId);
+    console.log('Available sockets:', io.sockets.sockets.keys());
+
     io.sockets.sockets.get(game.player1SocketId)?.join(roomName);
     io.sockets.sockets.get(game.player2SocketId)?.join(roomName);
+    console.log('Sockets in room:', io.sockets.adapter.rooms.get(roomName)?.size);
     // store the game data directly on the room object: 
     socket.adapter.rooms.get(roomName).game = game
+    const room = socket.adapter.rooms.get(roomName);
+    console.log("Roooomm: ", room)
     // emit the "gameStarted" to all users in the room 
     io.to(roomName).emit('gameStarted', game)
     if (callback) {

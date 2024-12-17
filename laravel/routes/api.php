@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/games', [GameController::class, 'store']);
     Route::put('/games/{game}', [GameController::class, 'update']);
     Route::delete('/games/{game}', [GameController::class, 'destroy']);
+    Route::post('games/multiplayer', [GameController::class, 'storeMultiplayerGame']);
     Route::get('/users', [UserController::class, 'index'])->can('viewAny', User::class);
 
     Route::get('/scoreboard/users-stats/{id}/{cols}/{rows}', [ScoreboardController::class, 'getUserStats']);

@@ -1,17 +1,18 @@
 exports.createGameEngine = () => {
 
     const initGame = (gameFromDB) => {
-        gameFromDB.gameStatus = null; 
+        gameFromDB.gameStatus = null;
         // null -> game has not started yet  
         // 0 -> game has started and running 
         // 1 -> player 1 is the winner 
         // 2 -> player 2 is the winner 
         // 3 -> draw (if applicable, e.g., time runs out with no winner)
-        
+
         gameFromDB.currentPlayer = 1; // Player 1 starts
         gameFromDB.board = shuffleCards(); // Randomized deck of cards
         gameFromDB.flippedCards = []; // Store indices of flipped cards in the current turn
         gameFromDB.matchedPairs = []; // Store indices of matched pairs
+        console.log("Game from db: ", gameFromDB)
         return gameFromDB;
     };
 

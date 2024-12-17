@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MultiplayerGamesPlayed extends Model
 {
     protected $table = 'multiplayer_games_played';
+    public $timestamps = false;
 
     protected $fillable = [
         'user_id',
