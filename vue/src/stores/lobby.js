@@ -104,15 +104,20 @@ export const useLobbyStore = defineStore('lobby', () => {
 
             const APIresponse = await axios.put(`games/${id}`, { status: 'PL' })
             const updatedGame = APIresponse.data.data
-
-            const newGame = await axios.post('')
-            newGameOnDB.player1SocketId = response.player1SocketId;
-            newGameOnDB.player2SocketId = response.player2SocketId;
+            console.log("ResponseLobby: ", response)
+            const dataToSend = {
+                user_id: response.player2.id,
+                game_id: updatedGame.id
+            }
+            const multiplayerGame = await axios.post('games/multiplayer', dataToSend)
+            multiplayerGame.player1SocketId = response.player1SocketId;
+            multiplayerGame.player2SocketId = response.player2SocketId;
 
             console.log('Game joined:', id)
             console.log("Response to put: ", updatedGame)
+            console.log("Created Multiplayer game: ", multiplayerGame)
 
-            socket.emit('startGame', updatedGame, (startedGame) => {
+            socket.emit('startGame', multiplayerGame, (startedGame) => {
                 console.log('Game has started', startedGame)
             })
         })

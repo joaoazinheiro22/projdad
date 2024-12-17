@@ -19,6 +19,7 @@ class MultiplayerGameResource extends JsonResource
             'user_id' => $this->user_id,
             'game_id' => $this->game_id,
             'player_won' => $this->player_won,
+            'pairs_discovered' => $this->pairs_discovered ?: 0
         ];
     }
 }

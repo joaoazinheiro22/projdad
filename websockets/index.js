@@ -190,14 +190,12 @@ io.on('connection', (socket) => {
     const roomName = 'game_' + clientGame.id
     console.log('Client Game:', clientGame);
     const game = gameEngine.initGame(clientGame)
-    // join the 2 players to the game room 
-    console.log('Player 1 Socket ID:', game.player1SocketId);
-    console.log('Player 2 Socket ID:', game.player2SocketId);
-    console.log('Available sockets:', io.sockets.sockets.keys());
 
+    // join the 2 players to the game room
     io.sockets.sockets.get(game.player1SocketId)?.join(roomName);
     io.sockets.sockets.get(game.player2SocketId)?.join(roomName);
     console.log('Sockets in room:', io.sockets.adapter.rooms.get(roomName)?.size);
+
     // store the game data directly on the room object: 
     socket.adapter.rooms.get(roomName).game = game
     const room = socket.adapter.rooms.get(roomName);
