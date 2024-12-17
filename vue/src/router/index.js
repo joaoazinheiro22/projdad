@@ -15,6 +15,7 @@ import BrainCoinsPurchase from '@/components/transactions/BrainCoinsPurchase.vue
 import GameHistory from '@/components/history/GameHistory.vue'
 import TransactionHistory from '@/components/history/TransactionHistory.vue'
 import MultiplayerGames from '@/components/multiplayer/MultiplayerGames.vue'
+import Shop from '@/components/shop/Shop.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeComponent
+    },
+    {
+      path: '/shop',
+      name: 'shop',
+      component: Shop
     },
     {
       path: '/users',
@@ -47,7 +53,8 @@ const router = createRouter({
       children: [
         {
           path: 'game',
-          component: GameHistory
+          name: 'GameHistory',
+          component: GameHistory,
         },
         {
           path: 'transaction',

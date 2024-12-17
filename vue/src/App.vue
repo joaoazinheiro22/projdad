@@ -6,12 +6,14 @@ import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import GlobalInputDialog from './components/common/GlobalInputDialog.vue';
 import router from './router';
 import { useChatStore } from '@/stores/chat';
+import { useCardDesignStore } from './stores/cardDesign';
 
 const storeChat = useChatStore()
 const socket = inject('socket')
 const authStore = useAuthStore()
 const isGameScoresDropdownOpen = ref(false)
 const isHistoryDropdownOpen = ref(false)
+const cardDesignStore = useCardDesignStore()
 
 let userDestination = null 
 
@@ -39,6 +41,7 @@ const inputDialog = useTemplateRef('input-dialog')
 provide('inputDialog', inputDialog)
 
 const logoutConfirmed = () => {
+  cardDesignStore.resetCardBack()
   authStore.logout()
   router.push('/')
 }
