@@ -150,9 +150,8 @@ export const useUserStore = defineStore('user', () => {
     const updateCoins = async (user, coins) => {
         storeError.resetMessages()
         const userId = user.id
-        console.log("AuthStore user.js: ", authStore.user)
         try {
-            const token = localStorage.getItem('authToken'); // Replace with your token value
+            const token = localStorage.getItem('authToken');
             const response = await axios.put(
                 'users/' + userId + '/coins',
                 { coins },

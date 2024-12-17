@@ -17,7 +17,7 @@ const errorStore = useErrorStore()
 const gameStore = useGameStore()
 const { toast } = useToast()
 
-const userProfile = ref({
+let userProfile = ref({
     id: authStore.userId,
     email: authStore.userEmail,
     nickname: authStore.user ? authStore.user.nickname : '',
@@ -71,7 +71,9 @@ const confirmRemoveAccount = async (user) => {
         errorStore.setErrorMessages('Please enter your password to confirm account removal')
         return
     }
-
+    if (!user){
+        user = userStore.fetchUser()
+    }
     try {
         const success = await userStore.deleteUser(user);
         if (success) {
@@ -99,6 +101,20 @@ const fetchGameHistory = async () => {
 
 onMounted(async () => {
     await fetchGameHistory()
+    try {
+        // Assim ao dar refresh, os dados mantém-se
+        userProfile.value = {
+            id: authStore.userId,
+            email: authStore.userEmail,
+            nickname: authStore.user?.nickname || '',
+            name: authStore.userName,
+            photo: authStore.userPhotoUrl,
+            password: '',
+            photo_filename: authStore.user?.photo_filename || ''
+        }
+    } catch (error) {
+        console.error('Error fetching user data:', error)
+    }
 })
 </script>
 

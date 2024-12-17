@@ -86,11 +86,18 @@ export const useAuthStore = defineStore('auth', () => {
   const register = async (userData) => {
     try {
       const response = await axios.post('auth/register', userData)
-      user.value = response.data
-      return 'Registration successful'
+      user.value = response.data.user
+      token.value = response.data.token
+      axios.defaults.headers.common.Authorization = 'Bearer ' + token.value;
+      localStorage.setItem('authToken', token.value);
+      console.log("response in auth.js register: ", response.data)
+      console.log("Token: ", token.value)
+      console.log("user: ", user.value)
+      return response.data
     } catch (error) {
-      console.error('Registration failed:', error)
-      return 'Registration failed'
+      console.error('Registration failed:', error.response.data.message)
+      storeError.setErrorMessages(error.response.data.message)
+      return false
     }
   }
 
@@ -282,6 +289,7 @@ export const useAuthStore = defineStore('auth', () => {
     userAdmin,
     userLoggedIn,
     userBrainCoinsBalance,
+    token,
     login,
     logout,
     register,

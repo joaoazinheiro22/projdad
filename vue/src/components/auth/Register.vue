@@ -63,24 +63,26 @@ const register = async () => {
     }
 
     try {
-      const result = await authStore.registerAdmin(formData)
-      
-      successMessage.value = 'Registration successful!'
-      
-      credentials.email = ''
-      credentials.nickname = ''
-      credentials.name = ''
-      credentials.photo = null
-      credentials.password = ''
-      credentials.password_confirmation = ''
-      
-      successMessage.value = 'Admin account created successfully!'
+      const result = await authStore.register(formData)
+      if(result){
+        console.log("User created:", authStore.user)
+        console.log("Result: ", result)
+        
+        credentials.email = ''
+        credentials.nickname = ''
+        credentials.name = ''
+        credentials.photo = null
+        credentials.password = ''
+        credentials.password_confirmation = ''
+        
+        successMessage.value = 'Account created successfully!'
 
-      await axios.post('/auth/logout')
-      router.push('/login')
-      toast({
-        description: 'Admin account created successfully!',
-      })
+        router.push('/')
+        toast({
+          description: 'Account created successfully!',
+        })
+      }
+      
     } catch (error) {
       // Handle registration error
       errorMessage.value = 'Registration failed. Please check your details.'
@@ -94,7 +96,7 @@ const register = async () => {
 
 <template>
   <div class="max-w-md mx-auto">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Register New Admin</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Register a new account</h2>
 
     <form @submit.prevent="register">
       <div class="space-y-2">
@@ -164,7 +166,7 @@ const register = async () => {
         {{ successMessage }}
       </div>
 
-      <Button type="submit">Create Admin</Button>
+      <Button class="mt-1" type="submit">Register</Button>
     </form>
   </div>
 </template>
