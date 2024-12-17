@@ -188,17 +188,22 @@ export const useUserStore = defineStore('user', () => {
             return false
         }
 
-        console.log('Deleting thisssss user:', user)
+        console.log('Deleting this user:', user)
 
         try {
-            await axios.delete('users/' + user.id + '/delete')
+             await axios.delete('users/' + user.id + '/delete')
             const index = getIndexOfUser(user.id)
             if (index > -1) {
                 users.value.splice(index, 1)
             }
+            applyFilters()
             return true
         } catch (e) {
-            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error deleting user!')
+            if (e.response) {
+                storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error deleting user!')
+            } else {
+                storeError.setErrorMessages('Network error occurred while deleting user', null, 500, 'Error deleting user!')
+            }
             return false
         }
     }

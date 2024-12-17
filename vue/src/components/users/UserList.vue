@@ -7,9 +7,22 @@ import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useErrorStore } from '@/stores/error'
 import 'primeicons/primeicons.css'
+import { useToast } from '@/components/ui/toast/use-toast'
+import ErrorMessage from '@/components/common/ErrorMessage.vue'
+
+defineProps({
+  users: {
+    type: Array,
+    required: true
+  },
+  readonly: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const userStore = useUserStore()
-const toast = useTemplateRef('toaster')
+const {toast} = useToast()
 const authStore = useAuthStore()
 const errorStore = useErrorStore()
 
@@ -73,16 +86,17 @@ const confirmRemoveAccount = async () => {
         return
     }
 
-    try {
-        const success = await userStore.deleteUser(userToDelete.value)
-        if (success) {
-            showRemoveAccountConfirmation.value = false
-            toast({
-                description: 'User account removed successfully',
-            })
-        }
-    } catch (error) {
-        console.log('Error removing account:', error.response?.data)
+    const success = await userStore.deleteUser(userToDelete.value)
+    if (success) {
+        showRemoveAccountConfirmation.value = false
+        toast({
+            description: 'User account removed successfully',
+        })
+    } else {
+        toast({
+            description: 'Failed to remove user account',
+            variant: 'destructive'
+        })
     }
 }
 

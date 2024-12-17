@@ -74,6 +74,7 @@ class AuthController extends Controller
         $this->purgeExpiredTokens();
 
         $credentials = $request->validated();
+        
 
         if (!Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized'], 401);

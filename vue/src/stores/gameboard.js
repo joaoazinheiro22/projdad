@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from './user'
 import { errorMessages } from 'vue/compiler-sfc'
 import { toast } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 export const useGameBoardStore = defineStore('gameboard', () => {
     const authStore = useAuthStore()
@@ -91,7 +92,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
                 }
 
                 const response = await axios.post('games', gameData)
-                
+
                 if(gameMode !== '3x4') {
                     authStore.user.brain_coins_balance -= 1;
                 }
@@ -162,6 +163,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
 
     let canExecute = true;
     const revealHint = async () => {
+        const { toast } = useToast();
         if (!canExecute) { // para impedir varias execucoes enquanto a carta vira
             return;
         }
@@ -170,6 +172,10 @@ export const useGameBoardStore = defineStore('gameboard', () => {
             const user = await userStore.fetchUser(authStore.userId);
             let coins = authStore.userBrainCoinsBalance
             if (coins < 1) {
+                toast({
+                    description: 'You need at least 1 coin to reveal a hint',
+                    variant: 'destructive'
+                });
                 return
             }
             const coinUpdateResponse = await userStore.updateCoins(user, coins - 1);
