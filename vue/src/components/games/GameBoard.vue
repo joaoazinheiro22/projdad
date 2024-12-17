@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth'
 import { useGameBoardStore } from '@/stores/gameboard'
 import { useToast } from '@/components/ui/toast/use-toast';
+import { useCardDesignStore } from '@/stores/cardDesign';
 
 
 const authStore = useAuthStore()
@@ -11,6 +12,7 @@ const gameboardStore = useGameBoardStore()
 const route = useRoute();
 const router = useRouter();
 const { toast } = useToast();
+const cardDesignStore = useCardDesignStore()
 
 const mode = computed(() => route.params.mode);
 
@@ -60,7 +62,7 @@ initGame();
             }">
           </div>
           <div class="card-back">
-            <img class="w-full h-full object-contain" src="/card_back.png" alt="Card Back">
+            <img class="w-full h-full object-contain" :src="cardDesignStore.selectedCardBack" alt="Card Back">
           </div>
         </div>
       </div>

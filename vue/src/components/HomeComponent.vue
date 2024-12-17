@@ -24,12 +24,17 @@ const goToGameBoard = (mode) => {
   router.push({ name: 'GameBoard', params: { mode } });
 };
 
+const goToShop = () => {
+  router.push({ name: 'shop' });
+};
+
 const goToLogin = () => {
   router.push({ name: 'Login' });
 };
 
-const goToUserProfile = (id) => {
-  router.push({ name: 'UserProfile', params: { id } });
+
+const goToGameHistory = () => {
+  router.push({ name: 'GameHistory' });
 };
 
 
@@ -73,7 +78,7 @@ onMounted(() => {
 
       <!-- Footer Section -->
       <div class="text-center text-white">
-        <p @click="goToUserProfile" class="underline cursor-pointer hover:text-gray-200">
+        <p @click="goToGameHistory" class="underline cursor-pointer hover:text-gray-200">
           See my history
         </p>
       </div>
@@ -104,12 +109,12 @@ onMounted(() => {
 
 
     <!-- More Games Section -->
-    <div class="bg-white w-full py-12">
+    <div v-if="authStore.userPlayer" class="bg-white w-full py-12">
       <div class="max-w-5xl mx-auto px-4 text-center">
         <h2 class="text-2xl font-bold mb-8">More Info Here</h2>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
           <div class="bg-yellow-400 rounded-md p-6 shadow-md">
-            <h3 class="text-lg font-bold">Example</h3>
+            <button @click="goToShop" class="text-lg font-bold">Shop</button>
           </div>
         </div>
       </div>
