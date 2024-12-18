@@ -1,123 +1,170 @@
+const ERROR_CODES = {
+    NOT_PLAYING: 10,
+    GAME_ENDED: 11,
+    INVALID_TURN: 12,
+    INVALID_MOVE: 13,
+    GAME_NOT_ENDED: 14,
+};
+
+const ERROR_MESSAGES = {
+    NOT_PLAYING: "You are not playing this game!",
+    GAME_ENDED: "Game has already ended!",
+    INVALID_TURN: "Invalid play: It is not your turn!",
+    INVALID_MOVE: "Invalid move: card already flipped or matched!",
+    GAME_NOT_ENDED: "Cannot close a game that has not ended!",
+};
+
 exports.createGameEngine = () => {
-
     const initGame = (gameFromDB) => {
-        gameFromDB.gameStatus = null;
-        // null -> game has not started yet  
-        // 0 -> game has started and running 
-        // 1 -> player 1 is the winner 
-        // 2 -> player 2 is the winner 
-        // 3 -> draw (if applicable, e.g., time runs out with no winner)
-
+        gameFromDB.gameStatus = 0; // Game not started
         gameFromDB.currentPlayer = 1; // Player 1 starts
-        gameFromDB.board = shuffleCards(); // Randomized deck of cards
-        gameFromDB.flippedCards = []; // Store indices of flipped cards in the current turn
-        gameFromDB.matchedPairs = []; // Store indices of matched pairs
-        console.log("Game from db: ", gameFromDB)
+        gameFromDB.pairsDiscovered = { 1: 0, 2: 0 };
+        gameFromDB.turns = { 1: 0, 2: 0 };
+        gameFromDB.size = gameFromDB.board.cols * gameFromDB.board.rows;
+        gameFromDB.board = createCardPairs(gameFromDB.size);
+        gameFromDB.matchedPairs = [];
+        gameFromDB.flippedCards = [];
         return gameFromDB;
     };
 
-    const shuffleCards = () => {
-        const deck = [...Array(16).keys()].map(i => Math.floor(i / 2)); // Generate pairs of card values
-        for (let i = deck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
+    const createCardPairs = (boardSize) => {
+        if (boardSize % 2 !== 0) {
+            throw new Error("Board size must be an even number");
         }
-        return deck;
+
+        const cardTypes = ["e", "o", "p", "c"];
+        const cardValues = [1, 2, 3, 4, 5, 6, 7, 11, 12, 13];
+
+        const cardCombinations = cardTypes.flatMap((type) =>
+            cardValues.map((value) => `${type}${value}`)
+        );
+
+        if (boardSize / 2 > cardCombinations.length) {
+            throw new Error("Board size is too large for the available card combinations");
+        }
+
+        const selectedCombinations = cardCombinations
+            .sort(() => Math.random() - 0.5)
+            .slice(0, boardSize / 2);
+
+        const shuffledCards = [...selectedCombinations, ...selectedCombinations]
+            .sort(() => Math.random() - 0.5)
+            .map((cardCode, index) => ({
+                id: index,
+                value: cardCode,
+                isFlipped: false,
+                isMatched: false,
+            }));
+
+        return shuffledCards;
     };
 
-    const isBoardComplete = (game) => game.matchedPairs.length === game.board.length / 2;
-
-    const changeGameStatus = (game) => {
-        if (isBoardComplete(game)) {
-            game.gameStatus = game.player1Score === game.player2Score ? 3 : (game.player1Score > game.player2Score ? 1 : 2);
-        } else {
-            game.gameStatus = 0;
-        }
+    const pairsDiscoveredFor = (game, player_id) => {
+        game.pairsDiscovered[player_id] += 1;
     };
 
-    const gameEnded = (game) => game.gameStatus > 0;
+    const gameEnded = (game) => game.gameStatus !== 0;
 
-    const flipCard = (game, index, playerSocketId) => {
-        if ((playerSocketId != game.player1SocketId) && (playerSocketId != game.player2SocketId)) {
-            return {
-                errorCode: 10,
-                errorMessage: 'You are not playing this game!'
-            };
+    const play = (game, index, playerSocketId, roomName, io) => {
+        if (!isPlayerInGame(game, playerSocketId)) {
+            return createErrorResponse(ERROR_CODES.NOT_PLAYING, ERROR_MESSAGES.NOT_PLAYING);
         }
-
         if (gameEnded(game)) {
-            return {
-                errorCode: 11,
-                errorMessage: 'Game has already ended!'
-            };
+            return createErrorResponse(ERROR_CODES.GAME_ENDED, ERROR_MESSAGES.GAME_ENDED);
+        }
+        if (!isPlayerTurn(game, playerSocketId)) {
+            return createErrorResponse(ERROR_CODES.INVALID_TURN, ERROR_MESSAGES.INVALID_TURN);
         }
 
-        if (index < 0 || index >= game.board.length || game.flippedCards.includes(index) || game.matchedPairs.includes(index)) {
-            return {
-                errorCode: 13,
-                errorMessage: 'Invalid play: card cannot be flipped!'
-            };
+        const card = game.board[index];
+        if (card.isFlipped || card.isMatched) {
+            return createErrorResponse(ERROR_CODES.INVALID_MOVE, ERROR_MESSAGES.INVALID_MOVE);
         }
 
-        game.flippedCards.push(index);
+        // Flip the card
+        card.isFlipped = true;
+        game.flippedCards.push(card);
+        io.to(roomName).emit("gameChanged", game);
 
         if (game.flippedCards.length === 2) {
-            const [first, second] = game.flippedCards;
-            if (game.board[first] === game.board[second]) {
-                game.matchedPairs.push(first, second);
-                game.currentPlayer === 1 ? game.player1Score++ : game.player2Score++;
+            game.turns[game.currentPlayer] += 1;
+            const [firstCard, secondCard] = game.flippedCards;
+
+            if (firstCard.value === secondCard.value) {
+                firstCard.isMatched = true;
+                secondCard.isMatched = true;
+                game.matchedPairs.push(firstCard.value);
+                game.flippedCards = [];
+                pairsDiscoveredFor(game, game.currentPlayer);
+                changeGameStatus(game);
+                io.to(roomName).emit("gameChanged", game);
             } else {
-                game.currentPlayer = game.currentPlayer === 1 ? 2 : 1;
+                setTimeout(() => {
+                    firstCard.isFlipped = false;
+                    secondCard.isFlipped = false;
+                    game.flippedCards = [];
+                    game.currentPlayer = game.currentPlayer === 1 ? 2 : 1;
+                    io.to(roomName).emit("gameChanged", game);
+                }, 1000);
             }
-            game.flippedCards = [];
         }
 
-        changeGameStatus(game);
         return true;
     };
 
+    const changeGameStatus = (game) => {
+        if (isGameComplete(game)) {
+            if (game.pairsDiscovered[1] === game.pairsDiscovered[2]) {
+                game.gameStatus = game.currentPlayer === 1 ? 2 : 1;
+            } else {
+                game.gameStatus = game.pairsDiscovered[1] > game.pairsDiscovered[2] ? 1 : 2;
+            }
+            game.status = "E";
+        }
+    };
+
+    const isGameComplete = (game) => game.matchedPairs.length === game.size / 2;
+
     const quit = (game, playerSocketId) => {
-        if ((playerSocketId != game.player1SocketId) && (playerSocketId != game.player2SocketId)) {
-            return {
-                errorCode: 10,
-                errorMessage: 'You are not playing this game!'
-            };
+        if (!isPlayerInGame(game, playerSocketId)) {
+            return createErrorResponse(ERROR_CODES.NOT_PLAYING, ERROR_MESSAGES.NOT_PLAYING);
         }
-
         if (gameEnded(game)) {
-            return {
-                errorCode: 11,
-                errorMessage: 'Game has already ended!'
-            };
+            return createErrorResponse(ERROR_CODES.GAME_ENDED, ERROR_MESSAGES.GAME_ENDED);
         }
-
-        game.gameStatus = playerSocketId == game.player1SocketId ? 2 : 1;
+        game.gameStatus = playerSocketId === game.player1SocketId ? 2 : 1;
+        game.status = "E";
         return true;
     };
 
     const close = (game, playerSocketId) => {
-        if ((playerSocketId != game.player1SocketId) && (playerSocketId != game.player2SocketId)) {
-            return {
-                errorCode: 10,
-                errorMessage: 'You are not playing this game!'
-            };
+        if (!isPlayerInGame(game, playerSocketId)) {
+            return createErrorResponse(ERROR_CODES.NOT_PLAYING, ERROR_MESSAGES.NOT_PLAYING);
         }
-
         if (!gameEnded(game)) {
-            return {
-                errorCode: 14,
-                errorMessage: 'Cannot close a game that has not ended!'
-            };
+            return createErrorResponse(ERROR_CODES.GAME_NOT_ENDED, ERROR_MESSAGES.GAME_NOT_ENDED);
         }
-
         return true;
+    };
+
+    const isPlayerInGame = (game, playerSocketId) => {
+        return playerSocketId === game.player1SocketId || playerSocketId === game.player2SocketId;
+    };
+
+    const isPlayerTurn = (game, playerSocketId) => {
+        return (game.currentPlayer === 1 && playerSocketId === game.player1SocketId) ||
+               (game.currentPlayer === 2 && playerSocketId === game.player2SocketId);
+    };
+
+    const createErrorResponse = (errorCode, errorMessage) => {
+        return { errorCode, errorMessage };
     };
 
     return {
         initGame,
         gameEnded,
-        flipCard,
+        play,
         quit,
-        close
+        close,
     };
 };

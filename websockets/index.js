@@ -185,27 +185,51 @@ io.on('connection', (socket) => {
 
   socket.on('startGame', (clientGame, callback) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
-      return
+      return;
     }
-    const roomName = 'game_' + clientGame.id
+    const roomName = 'game_' + clientGame.id;
     console.log('Client Game:', clientGame);
-    const game = gameEngine.initGame(clientGame)
-
-    // join the 2 players to the game room
+  
+    const game = gameEngine.initGame({
+      ...clientGame,
+      board: {
+        cols: 4, //estatico
+        rows: 4  
+      },
+      player1: clientGame.player1 || { name: 'Player 1' },
+      player2: clientGame.player2 || { name: 'Player 2' },
+      gameStatus: 0,
+      currentPlayer: 1,
+      pairsDiscovered: { '1': 0, '2': 0 },
+      turns: { '1': 0, '2': 0 },
+      size: 16,
+      matchedPairs: [],
+      flippedCards: []
+    });
+  
+    // Join the 2 players to the game room
     io.sockets.sockets.get(game.player1SocketId)?.join(roomName);
     io.sockets.sockets.get(game.player2SocketId)?.join(roomName);
     console.log('Sockets in room:', io.sockets.adapter.rooms.get(roomName)?.size);
-
-    // store the game data directly on the room object: 
-    socket.adapter.rooms.get(roomName).game = game
+  
+    // Store the game data directly on the room object
     const room = socket.adapter.rooms.get(roomName);
-    console.log("Roooomm: ", room)
-    // emit the "gameStarted" to all users in the room 
-    io.to(roomName).emit('gameStarted', game)
-    if (callback) {
-      callback(game)
+    if (room) {
+      room.game = game;
+      console.log("Room:", room);
+  
+      // Emit the "gameStarted" to all users in the room
+      io.to(roomName).emit('gameStarted', game);
+      if (callback) {
+        callback(game);
+      }
+    } else {
+      console.error('Room not found:', roomName);
+      if (callback) {
+        callback({ error: 'Room not found' });
+      }
     }
-  })
+  });
 
   socket.on('fetchPlayingGames', (callback) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
@@ -229,9 +253,7 @@ io.on('connection', (socket) => {
         callback(playResult)
       }
       return
-    }
-    // notify all users playing the game (in the room) that the game state has changed 
-    // Also, notify them that the game has ended 
+    } 
     io.to(roomName).emit('gameChanged', game)
     if (gameEngine.gameEnded(game)) {
       io.to(roomName).emit('gameEnded', game)
@@ -255,8 +277,6 @@ io.on('connection', (socket) => {
       }
       return
     }
-    // notify all users playing the game (in the room) that the game state has changed 
-    // Also, notify them that the game has been quit and the game has ended 
     io.to(roomName).emit('gameChanged', game)
     io.to(roomName).emit('gameQuitted', { userQuit: socket.data.user, game: game })
     if (gameEngine.gameEnded(game)) {

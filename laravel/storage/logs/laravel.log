@@ -5518,3 +5518,7 @@ Did you mean one of these?
 #46 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('...')
 #47 {main}
 "} 
+[2024-12-18 00:59:28] local.ERROR: Out of memory (allocated 2097152 bytes) (tried to allocate 12288 bytes) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Out of memory (allocated 2097152 bytes) (tried to allocate 12288 bytes) at C:\\Users\\joaom\\Documents\\projdad\\laravel\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Support\\Providers\\EventServiceProvider.php:74)
+[stacktrace]
+#0 {main}
+"} 
