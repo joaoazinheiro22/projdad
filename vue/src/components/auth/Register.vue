@@ -26,7 +26,7 @@ const credentials = reactive({
 })
 
 const register = async () => {
-  
+
 
   errorMessage.value = ''
   successMessage.value = ''
@@ -63,18 +63,23 @@ const register = async () => {
     }
 
     try {
-      const result = await authStore.register(formData)
-      if(result){
+      let result = null
+      if (authStore.userAdmin) {
+        result = await authStore.registerAdmin(formData)
+      } else {
+        result = await authStore.register(formData)
+      }
+      if (result) {
         console.log("User created:", authStore.user)
         console.log("Result: ", result)
-        
+
         credentials.email = ''
         credentials.nickname = ''
         credentials.name = ''
         credentials.photo = null
         credentials.password = ''
         credentials.password_confirmation = ''
-        
+
         successMessage.value = 'Account created successfully!'
 
         router.push('/')
@@ -82,7 +87,7 @@ const register = async () => {
           description: 'Account created successfully!',
         })
       }
-      
+
     } catch (error) {
       // Handle registration error
       errorMessage.value = 'Registration failed. Please check your details.'
@@ -96,7 +101,7 @@ const register = async () => {
 
 <template>
   <div class="max-w-md mx-auto">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Register a new account</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ authStore.userAdmin ? 'Create an Admin' : 'Register a new account' }}</h2>
 
     <form @submit.prevent="register">
       <div class="space-y-2">
