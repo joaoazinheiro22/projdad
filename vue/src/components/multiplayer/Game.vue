@@ -43,12 +43,17 @@ const props = defineProps({
   }
 })
 
+onMounted(() => {
+  console.log('Game', props.game)
+})
+
 const alertDialog = inject('alertDialog')
 
 const opponentName = computed(() => {
-  return storeMultiGames.playerNumberOfCurrentUser(props.game) === 1
-    ? storeAuth.getFirstLastName(props.game.player2.name)
-    : storeAuth.getFirstLastName(props.game.player1.name)
+  const gameData = props.game.data?.data
+  return storeMultiGames.playerNumberOfCurrentUser(gameData) === 1
+    ? storeAuth.getFirstLastName(props.game.player2?.name)
+    : storeAuth.getFirstLastName(props.game.player1?.name)
 })
 
 const wow = computed(() => {
@@ -63,7 +68,7 @@ const currentUserTurn = computed(() => {
   if (gameEnded.value) {
     return false
   }
-  if (props.game.currentPlayer === storeMultiGames.playerNumberOfCurrentUser(props.game)){
+  if (props.game.currentPlayer === storeMultiGames.playerNumberOfCurrentUser(props.game.currentPlayer)){
     startTimer()
     return true
   }
@@ -206,7 +211,7 @@ onUnmounted(() => {
         </svg>
         {{ gameEnded ? 'Close' : 'Quit' }}
       </Button>
-      <CardTitle>#{{ game.id }}</CardTitle>
+      <CardTitle>#{{ game.data.data.id }}</CardTitle>
       <CardDescription>
         <div class="text-base">
           <span class="font-bold">Opponent:</span> {{ opponentName }}

@@ -90,15 +90,6 @@ io.on('connection', (socket) => {
     }
     console.log('Available sockets:', Array.from(io.sockets.sockets.keys()));
 
-    // const player1Socket = io.sockets.sockets.get(game.player1SocketId);
-    // const player2Socket = io.sockets.sockets.get(game.player2SocketId);
-
-    // if (!player1Socket) {
-    //   console.error('Player 1 socket not found:', game.player1SocketId);
-    // }
-    // if (!player2Socket) {
-    //   console.error('Player 2 socket not found:', game.player2SocketId);
-    // }
     const game = lobby.getGame(id)
     if (socket.data.user.id == game.player1.id) {
       if (callback) {
@@ -195,18 +186,11 @@ io.on('connection', (socket) => {
       board: {
         cols: 4, //estatico
         rows: 4  
-      },
-      player1: clientGame.player1 || { name: 'Player 1' },
-      player2: clientGame.player2 || { name: 'Player 2' },
-      gameStatus: 0,
-      currentPlayer: 1,
-      pairsDiscovered: { '1': 0, '2': 0 },
-      turns: { '1': 0, '2': 0 },
-      size: 16,
-      matchedPairs: [],
-      flippedCards: []
+      }
     });
   
+    console.log('Game:', game);
+
     // Join the 2 players to the game room
     io.sockets.sockets.get(game.player1SocketId)?.join(roomName);
     io.sockets.sockets.get(game.player2SocketId)?.join(roomName);

@@ -107,7 +107,7 @@ export const useMultiplayerStore = defineStore('multiplayer', () => {
         // Player that created the game is responsible for updating on the database
         if (playerNumberOfCurrentUser(game) === 1) {
             const APIresponse = await axios.put('games/' + game.id, {
-                status: 'ended',
+                status: 'E',
                 winner_id: game.gameStatus === 1 ? game.player1_id : (game.gameStatus === 2 ? game.player2_id : null),
             })
             const updatedGameOnDB = APIresponse.data.data
