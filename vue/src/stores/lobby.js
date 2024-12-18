@@ -112,6 +112,8 @@ export const useLobbyStore = defineStore('lobby', () => {
             const multiplayerGame = await axios.post('games/multiplayer', dataToSend)
             multiplayerGame.player1SocketId = response.player1SocketId;
             multiplayerGame.player2SocketId = response.player2SocketId;
+            multiplayerGame.player1 = response.player1;
+            multiplayerGame.player2 = response.player2;
 
             console.log('Game joined:', id)
             console.log("Response to put: ", updatedGame)
