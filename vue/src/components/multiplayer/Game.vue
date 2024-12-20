@@ -12,16 +12,21 @@ const storeAuth = useAuthStore()
 const autoStart = ref(false)
 const seconds = ref(0)
 let timer = null
+const hasStarted = ref(false)  // Add this to track first card flip
 
 const startTimer = () => {
-  timer = setInterval(() => {
-    seconds.value++
-  }, 1000)
+  if (!hasStarted.value) {
+    hasStarted.value = true
+    timer = setInterval(() => {
+      seconds.value++
+    }, 1000)
+  }
 }
 
 const resetTimer = () => {
   clearInterval(timer)
   seconds.value = 0
+  hasStarted.value = false  // Reset hasStarted
 }
 
 const pauseTimer = () => {
@@ -50,7 +55,7 @@ onMounted(() => {
 const alertDialog = inject('alertDialog')
 
 const opponentName = computed(() => {
-  const gameData = props.game
+  const gameData = props.game.data?.data
   return storeMultiGames.playerNumberOfCurrentUser(gameData) === 1
     ? storeAuth.getFirstLastName(props.game.player2?.name)
     : storeAuth.getFirstLastName(props.game.player1?.name)
@@ -141,6 +146,17 @@ const statusGameMessage = computed(() => {
   }
 })
 
+const playPieceOfBoard = (idx) => {
+  if (!gameEnded.value && currentUserTurn.value && !wow.value) {
+    if (!hasStarted.value) {
+      startTimer()  // Start timer on first card flip
+    }
+    storeMultiGames.play(props.game, idx)
+    if (interrupt.value) {
+      resetTimer()
+    }
+  }
+}
 
 const clickCardButton = () => {
   if (gameEnded.value) {
@@ -155,12 +171,6 @@ const clickCardButton = () => {
     )
   }
 }
-const flipCard = (idx) => {
-  const card = storeMultiGames.cards[idx];  // Get the card by index
-  if (!card.isFlipped && storeMultiGames.matchedCards.length < 2) {
-    storeMultiGames.flipCard(card);  // Call the store function to flip the card
-  }
-};
 
 watch(interrupt, (newValue) => {
   if (newValue === true) {
@@ -176,9 +186,10 @@ const quit = () => {
 }
 
 onMounted(() => {
-  if (autoStart.value) {
-    startTimer()
-  }
+  console.log('Game', props.game)
+  // if (autoStart.value) {
+  //   startTimer()
+  // }
 })
 
 onUnmounted(() => {
@@ -191,11 +202,11 @@ onUnmounted(() => {
   <Card class="relative grow mx-4 mt-8 pt-2 pb-4 px-1" :class="cardBgColor">
     <CardHeader class="pb-0">
       <p class="text-lg sm:text-xl text-gray-800 dark:text-gray-300">
-        Time:
+        ⏱ Time:
         <span class="font-semibold text-black dark:text-white">{{ showSeconds }}</span>
       </p>
       <p class="text-lg sm:text-xl text-gray-800 dark:text-gray-300">
-        Moves: <span class="font-semibold text-black dark:text-white">{{ turns }}</span>
+        📋 Moves: <span class="font-semibold text-black dark:text-white">{{ turns }}</span>
       </p>
       <Button @click="clickCardButton" class="absolute top-4 right-4" :class="buttonClasses">
         <!-- class="absolute -mt-8 -mr-20" :class="buttonClasses"> -->
@@ -224,7 +235,12 @@ onUnmounted(() => {
         {{ statusGameMessage }}
       </h3>
       <div>
-        <Board :board="game.board" :size="game.size" @play="playPieceOfBoard"></Board>
+        <Board 
+  :board="game.board" 
+  :size="game.size" 
+  @play="playPieceOfBoard" 
+  @firstCardFlipped="startGameTimer"
+/>
       </div>
     </CardContent>
   </Card>

@@ -25,6 +25,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
     const startTime = ref(Date.now())
     const elapsedTime = ref(0)
     const timerInterval = ref(null)
+    const hasGameStarted = ref(false)
 
     // Game Mode Configuration
     const gridConfig = computed(() => {
@@ -44,11 +45,21 @@ export const useGameBoardStore = defineStore('gameboard', () => {
 
     // Timer Methods
     const startTimer = () => {
-        startTime.value = Date.now()
-        timerInterval.value = setInterval(() => {
-            elapsedTime.value = Date.now() - startTime.value
-        }, 1000)
+        if (!hasGameStarted.value) {
+            hasGameStarted.value = true
+            startTime.value = Date.now()
+            timerInterval.value = setInterval(() => {
+                elapsedTime.value = Date.now() - startTime.value
+            }, 1000)
+        }
     }
+
+    const resetTimer = () => {
+        hasGameStarted.value = false
+        stopTimer()
+        elapsedTime.value = 0
+    }
+    
 
     const stopTimer = () => {
         if (timerInterval.value) {
@@ -111,7 +122,8 @@ export const useGameBoardStore = defineStore('gameboard', () => {
             Array.from({ length: 7 }, (_, i) => ({
                 id: `${suit}${i + 1}`,
                 image: `/${suit}${i + 1}.png`,
-                isFlipped: false
+                isFlipped: false,
+                isRemoved: false
             })).concat(
                 Array.from({ length: 3 }, (_, i) => ({
                     id: `${suit}${i + 11}`,
@@ -128,7 +140,8 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         ]).sort(() => Math.random() - 0.5)
 
         // Start the timer
-        startTimer()
+        // startTimer()
+        resetTimer()
     }
 
     // Card Interaction
@@ -138,16 +151,27 @@ export const useGameBoardStore = defineStore('gameboard', () => {
             selectedCards.value.length === 2 ||
             selectedCards.value.find(c => c.uniqueKey === card.uniqueKey)
         ) return
-
+    
+        // Inicia o timer ao virar a primeira carta
+        if (!hasGameStarted.value) {
+            startTimer()
+        }
+    
         card.isFlipped = true
         selectedCards.value.push(card)
-
+    
         if (selectedCards.value.length === 2) {
             turnCount.value++
-
+    
             setTimeout(() => {
                 if (selectedCards.value[0].id === selectedCards.value[1].id) {
                     matchedCards.value.push(selectedCards.value[0].id)
+                    // Mark matched cards as removed
+                    cards.value.forEach(card => {
+                        if (card.id === selectedCards.value[0].id) {
+                            card.isRemoved = true
+                        }
+                    })
                 } else {
                     selectedCards.value.forEach(c => {
                         const cardToFlip = cards.value.find(card => card.uniqueKey === c.uniqueKey)
@@ -155,11 +179,12 @@ export const useGameBoardStore = defineStore('gameboard', () => {
                     })
                 }
                 selectedCards.value = []
-
                 checkGameCompletion()
             }, 1000)
         }
     }
+    
+
 
     let canExecute = true;
     const revealHint = async () => {
@@ -205,14 +230,18 @@ export const useGameBoardStore = defineStore('gameboard', () => {
     }
 
 
-    const checkGameCompletion = () => {
-        const allCardsFlipped = cards.value.every(card => card.isFlipped)
-
+        const checkGameCompletion = () => {
+        const allCardsFlipped = cards.value.every(card => 
+            matchedCards.value.includes(card.id)
+        )
+    
         if (allCardsFlipped) {
             stopTimer()
             isGameWon.value = true
-
+    
             if (authStore.user) {
+                // Capture final time before saving
+                const finalTime = elapsedTime.value
                 saveSinglePlayerGameResults()
             }
         }
@@ -253,12 +282,14 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         formattedTime,
         currentGameId,
         boardId,
+        hasGameStarted,
 
 
         initializeGame,
         flipCard,
         resetGame,
         startTimer,
+        resetTimer,
         stopTimer,
         revealHint
     }
