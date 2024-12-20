@@ -50,7 +50,7 @@ onMounted(() => {
 const alertDialog = inject('alertDialog')
 
 const opponentName = computed(() => {
-  const gameData = props.game.data?.data
+  const gameData = props.game
   return storeMultiGames.playerNumberOfCurrentUser(gameData) === 1
     ? storeAuth.getFirstLastName(props.game.player2?.name)
     : storeAuth.getFirstLastName(props.game.player1?.name)
@@ -141,12 +141,6 @@ const statusGameMessage = computed(() => {
   }
 })
 
-const playPieceOfBoard = (idx) => {
-  if (!gameEnded.value && currentUserTurn.value && !wow.value) {
-    storeMultiGames.play(props.game, idx)
-    resetTimer()
-  }
-}
 
 const clickCardButton = () => {
   if (gameEnded.value) {
@@ -161,6 +155,12 @@ const clickCardButton = () => {
     )
   }
 }
+const flipCard = (idx) => {
+  const card = storeMultiGames.cards[idx];  // Get the card by index
+  if (!card.isFlipped && storeMultiGames.matchedCards.length < 2) {
+    storeMultiGames.flipCard(card);  // Call the store function to flip the card
+  }
+};
 
 watch(interrupt, (newValue) => {
   if (newValue === true) {
@@ -191,11 +191,11 @@ onUnmounted(() => {
   <Card class="relative grow mx-4 mt-8 pt-2 pb-4 px-1" :class="cardBgColor">
     <CardHeader class="pb-0">
       <p class="text-lg sm:text-xl text-gray-800 dark:text-gray-300">
-        ⏱ Time:
+        Time:
         <span class="font-semibold text-black dark:text-white">{{ showSeconds }}</span>
       </p>
       <p class="text-lg sm:text-xl text-gray-800 dark:text-gray-300">
-        📋 Moves: <span class="font-semibold text-black dark:text-white">{{ turns }}</span>
+        Moves: <span class="font-semibold text-black dark:text-white">{{ turns }}</span>
       </p>
       <Button @click="clickCardButton" class="absolute top-4 right-4" :class="buttonClasses">
         <!-- class="absolute -mt-8 -mr-20" :class="buttonClasses"> -->

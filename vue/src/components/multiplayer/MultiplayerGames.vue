@@ -10,6 +10,6 @@ const storeAuth = useAuthStore()
     <div class="flex flex-wrap justify-start space-x-4">
         <Chat class="w-72"></Chat>
         <Lobby v-if="storeAuth.user" class="w-72"></Lobby>
-        <Games v-if="storeAuth.user" class="w-72"></Games>
+        <Games v-if="storeAuth.user" :class="storeAuth.user ? 'flex-1' : 'w-72'"></Games>
     </div>
 </template>
