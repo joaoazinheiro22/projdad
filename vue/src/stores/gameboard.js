@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, isMemoSame } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
@@ -93,7 +93,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
 
                 const response = await axios.post('games', gameData)
 
-                if(gameMode !== '3x4') {
+                if (gameMode !== '3x4') {
                     authStore.user.brain_coins_balance -= 1;
                 }
 
@@ -111,12 +111,14 @@ export const useGameBoardStore = defineStore('gameboard', () => {
             Array.from({ length: 7 }, (_, i) => ({
                 id: `${suit}${i + 1}`,
                 image: `/${suit}${i + 1}.png`,
-                isFlipped: false
+                isFlipped: false,
+                isMatched: false
             })).concat(
                 Array.from({ length: 3 }, (_, i) => ({
                     id: `${suit}${i + 11}`,
                     image: `/${suit}${i + 11}.png`,
-                    isFlipped: false
+                    isFlipped: false,
+                    isMatched: false
                 }))
             )
         )
@@ -148,6 +150,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
             setTimeout(() => {
                 if (selectedCards.value[0].id === selectedCards.value[1].id) {
                     matchedCards.value.push(selectedCards.value[0].id)
+                    selectedCards.value.forEach(c => c.isMatched = true)
                 } else {
                     selectedCards.value.forEach(c => {
                         const cardToFlip = cards.value.find(card => card.uniqueKey === c.uniqueKey)

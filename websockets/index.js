@@ -21,7 +21,7 @@ httpServer.listen(3000, () => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`Client with socket id ${socket.id} has connected!`);
+  // console.log(`Client with socket id ${socket.id} has connected!`);
 
   // ------------------------------------------------------
   // Chat and Private Messages
@@ -76,9 +76,9 @@ io.on('connection', (socket) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return
     }
-    console.log('gameId:', gameId)
+    // console.log('gameId:', gameId)
     const game = lobby.addGame(socket.data.user, socket.id, gameId)
-    console.log('Game created:', game);
+    // console.log('Game created:', game);
     io.to('lobby').emit('lobbyChanged', lobby.getGames())
     if (callback) {
       callback(game)
@@ -88,17 +88,8 @@ io.on('connection', (socket) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return
     }
-    console.log('Available sockets:', Array.from(io.sockets.sockets.keys()));
+    // console.log('Available sockets:', Array.from(io.sockets.sockets.keys()));
 
-    // const player1Socket = io.sockets.sockets.get(game.player1SocketId);
-    // const player2Socket = io.sockets.sockets.get(game.player2SocketId);
-
-    // if (!player1Socket) {
-    //   console.error('Player 1 socket not found:', game.player1SocketId);
-    // }
-    // if (!player2Socket) {
-    //   console.error('Player 2 socket not found:', game.player2SocketId);
-    // }
     const game = lobby.getGame(id)
     if (socket.data.user.id == game.player1.id) {
       if (callback) {
@@ -187,19 +178,19 @@ io.on('connection', (socket) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return
     }
-    const roomName = 'game_' + clientGame.id
-    console.log('Client Game:', clientGame);
+    const roomName = 'game_' + clientGame.data.data.id
+    // console.log('Client Game:', clientGame);
     const game = gameEngine.initGame(clientGame)
 
     // join the 2 players to the game room
     io.sockets.sockets.get(game.player1SocketId)?.join(roomName);
     io.sockets.sockets.get(game.player2SocketId)?.join(roomName);
-    console.log('Sockets in room:', io.sockets.adapter.rooms.get(roomName)?.size);
+    // console.log('Sockets in room:', io.sockets.adapter.rooms.get(roomName)?.size);
 
     // store the game data directly on the room object: 
     socket.adapter.rooms.get(roomName).game = game
     const room = socket.adapter.rooms.get(roomName);
-    console.log("Roooomm: ", room)
+    // console.log("Roooomm: ", room)
     // emit the "gameStarted" to all users in the room 
     io.to(roomName).emit('gameStarted', game)
     if (callback) {
@@ -222,8 +213,10 @@ io.on('connection', (socket) => {
     }
     const roomName = 'game_' + playData.gameId
     // load game state from the game data stored directly on the room object: 
+    console.log('ROom', socket.adapter.rooms.get(roomName))
     const game = socket.adapter.rooms.get(roomName).game
-    const playResult = gameEngine.play(game, playData.index, socket.id)
+    console.log('Game:', game)
+    const playResult = gameEngine.play(game, playData.index, socket.id, roomName, io)
     if (playResult !== true) {
       if (callback) {
         callback(playResult)
@@ -232,12 +225,9 @@ io.on('connection', (socket) => {
     }
     // notify all users playing the game (in the room) that the game state has changed 
     // Also, notify them that the game has ended 
-    io.to(roomName).emit('gameChanged', game)
+
     if (gameEngine.gameEnded(game)) {
       io.to(roomName).emit('gameEnded', game)
-    }
-    if (callback) {
-      callback(game)
     }
   })
 

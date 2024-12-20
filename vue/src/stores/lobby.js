@@ -45,8 +45,6 @@ export const useLobbyStore = defineStore('lobby', () => {
         try {
 
             storeError.resetMessages()
-
-
             const gameData = {
                 type: 'M',
                 created_user_id: storeAuth.userId,
@@ -92,7 +90,7 @@ export const useLobbyStore = defineStore('lobby', () => {
     }
 
     // join a game of the lobby
-    const joinGame = (id) => {
+    const joinGame = (id, board) => {
         storeError.resetMessages()
         console.log('Joining game:', id)
 
@@ -112,7 +110,9 @@ export const useLobbyStore = defineStore('lobby', () => {
             const multiplayerGame = await axios.post('games/multiplayer', dataToSend)
             multiplayerGame.player1SocketId = response.player1SocketId;
             multiplayerGame.player2SocketId = response.player2SocketId;
-
+            multiplayerGame.player1 = response.player1;
+            multiplayerGame.player2 = response.player2;
+            multiplayerGame.boardId = multiplayerGame.data.data.boardId;
             console.log('Game joined:', id)
             console.log("Response to put: ", updatedGame)
             console.log("Created Multiplayer game: ", multiplayerGame)

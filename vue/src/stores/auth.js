@@ -28,6 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value ? user.value.id : ''
   })
 
+
   const userFirstLastName = computed(() => {
     const nameValue = userName.value || ''
     const names = nameValue.trim().split(' ')
@@ -35,6 +36,14 @@ export const useAuthStore = defineStore('auth', () => {
     const lastName = names.length > 1 ? names[names.length - 1] : ''
     return (firstName + ' ' + lastName).trim()
   })
+
+  const getFirstLastName = (name) => {
+    const names = name.trim().split(' ')
+    const firstName = names[0] ?? ''
+    const lastName = names.length > 1 ? names[names.length - 1] : ''
+    return (firstName + ' ' + lastName).trim()
+
+  }
 
   const userEmail = computed(() => {
     return user.value ? user.value.email : ''
@@ -298,5 +307,6 @@ export const useAuthStore = defineStore('auth', () => {
     restoreToken,
     updateUser,
     uploadPhoto,
+    getFirstLastName
   }
 })

@@ -17,6 +17,7 @@ const storeLobby = useLobbyStore()
 const selectedBoardId = ref()
 
 const createGame = () => {
+
     storeLobby.addGame(selectedBoardId.value)
 }
 
