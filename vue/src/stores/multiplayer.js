@@ -109,8 +109,9 @@ export const useMultiplayerGamesStore = defineStore('multiPlayerGames', () => {
     updateGame(game)
 
     const currentUser = playerNumberOfCurrentUser(game)
+    console.log("Game after end: ", game)
     if (currentUser === 1 || currentUser == 2) {
-      const APIresponse = await axios.patch('multiplayer-games/' + game.id, {
+      const APIresponse = await axios.put('multiplayer-games/' + game.id, { //todo
         turns: game.turns[currentUser],
         status: game.status,
         pairs_discovered: game.pairsDiscovered[currentUser], // The number of pairs matched in the game
@@ -130,7 +131,7 @@ export const useMultiplayerGamesStore = defineStore('multiPlayerGames', () => {
     if (payload.userQuit.id != storeAuth.userId) {
       toast({
         title: 'Game Quit',
-        description: `${payload.userQuit.name} has quitted game #${payload.game.id}, giving you the win!`
+        description: `${payload.userQuit.name} has quitted game #${payload.game.data.data.id}, giving you the win!`
       })
     }
     updateGame(payload.game)

@@ -78,11 +78,20 @@ exports.createGameEngine = () => {
         return shuffledCards;
     };
 
-    const isBoardComplete = (game) => game.matchedCards.length === game.board.length / 2;
+    const isBoardComplete = (game) => game.matchedCards.length === game.size / 2;
 
     const changeGameStatus = (game) => {
         if (isBoardComplete(game)) {
-            game.gameStatus = game.player1Score === game.player2Score ? 3 : (game.player1Score > game.player2Score ? 1 : 2);
+            if (game.pairsDiscovered[1] !== game.pairsDiscovered[2]) {
+                game.gameStatus = game.pairsDiscovered[1] > game.pairsDiscovered[2] ? 1 : 2;
+            } else {
+                // "Empate" 
+                if (game.currentPlayer === 1) {
+                    game.gameStatus = 2; // jogador 2 alcançou primeiro os pares
+                } else {
+                    game.gameStatus = 1;
+                }
+            }
         } else {
             game.gameStatus = 0;
         }
@@ -112,7 +121,7 @@ exports.createGameEngine = () => {
         }
         const card = game.board[index];
         card.isFlipped = true;
-        game.flippedCards.push(index);
+        game.flippedCards.push(card);
         io.to(roomName).emit("gameChanged", game);
         if (game.flippedCards.length === 2) {
             game.turns[game.currentPlayer] += 1;
@@ -123,6 +132,7 @@ exports.createGameEngine = () => {
                 firstCard.isMatched = true;
                 secondCard.isMatched = true;
                 game.matchedCards.push(firstCard.value);
+
                 game.flippedCards = [];
                 pairsDiscoveredFor(game, game.currentPlayer);
                 changeGameStatus(game);

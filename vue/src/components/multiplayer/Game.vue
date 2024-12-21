@@ -99,7 +99,7 @@ const clickCardButton = () => {
             'Quit game',
             'Cancel',
             `Yes, I want to quit`,
-            `Are you sure you want to quit the game #${props.game.id}? You'll lose the game!`
+            `Are you sure you want to quit the game #${props.game.data.data.id}? You'll lose the game!`
         )
     }
 }
@@ -115,6 +115,16 @@ const close = () => {
 const quit = () => {
     storeMultiplayer.quit(props.game)
 }
+const enoughCardsFlipped = computed(() => {
+    return props.game.flippedCards.length === 2
+})
+
+const play = (game, cardId) => {
+    if (game.currentPlayer !== storeMultiplayer.playerNumberOfCurrentUser(game) || gameEnded.value || enoughCardsFlipped.value) {
+        return
+    }
+    storeMultiplayer.play(game, cardId)
+}
 </script>
 <template>
     <Card class="relative grow mx-4 mt-8 pt-2 pb-4 px-1" :class="cardBgColor">
@@ -126,7 +136,7 @@ const quit = () => {
                 </svg>
                 {{ gameEnded ? 'Close' : 'Quit' }}
             </Button>
-            <CardTitle>#{{ props.game.id }}</CardTitle>
+            <CardTitle>#{{ props.game.data.data.id }}</CardTitle>
             <CardDescription>
                 <div class="text-base">
                     <span class="font-bold">Opponent:</span> {{ opponentName }}
@@ -144,7 +154,7 @@ const quit = () => {
             }">
                 <div v-for="card in props.game.board" :key="card.uniqueKey"
                     class="card-container flex items-center justify-center aspect-square cursor-pointer">
-                    <div class="card" @click="storeMultiplayer.play(props.game, card.id)">
+                    <div class="card" @click="play(props.game, card.id)">
                         <div v-if="card.isFlipped || card.isMatched">
                             <img class="w-full h-full object-contain" :src="`/${card.value}.png`" alt="Card Front"
                                 :class="{
