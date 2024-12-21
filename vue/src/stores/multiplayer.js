@@ -13,6 +13,12 @@ export const useMultiplayerGamesStore = defineStore('multiPlayerGames', () => {
   const socket = inject('socket')
   const games = ref([])
 
+  const gameTime = ref(0)
+
+  const setGameTime = (time) => {
+    gameTime.value = time
+  }
+
 
 
 
@@ -107,24 +113,38 @@ export const useMultiplayerGamesStore = defineStore('multiPlayerGames', () => {
   })
   socket.on('gameEnded', async (game) => {
     updateGame(game)
-
     const currentUser = playerNumberOfCurrentUser(game)
     console.log("Game after end: ", game)
-    if (currentUser === 1 || currentUser == 2) {
-      const turns = game.data.data.turns ? game.data.data.turns[currentUser] : null;
-      const pairsDiscovered = game.data.data.pairsDiscovered ? game.data.data.pairsDiscovered[currentUser] : null;
-      const APIresponse = await axios.patch('multiplayer-games/' + game.data.data.id, { //todo
-        turns: turns,
-        status: game.data.data.status,
-        pairs_discovered: pairsDiscovered,
-        won: game.data.data.gameStatus === currentUser ? 1 : 0,
-        user_id: storeAuth.userId,
+
+
+    if (currentUser === 1 || currentUser === 2) {
+      // Update Player 1's game
+      await axios.patch('multiplayer-games/' + game.player1GameId, {
+        pairs_discovered: game.pairsDiscovered[1],
+        player_won: game.gameStatus === 1 ? 1 : 0,  // 1 if gameStatus is 1, 0 otherwise
       });
 
-      const updatedGameOnDB = APIresponse.data.data
-      console.log('Game has ended and updated on the database: ', updatedGameOnDB)
+
+
+      // Update Player 2's game
+      await axios.patch('multiplayer-games/' + game.player2GameId, {
+        pairs_discovered: game.pairsDiscovered[2],
+        player_won: game.gameStatus === 2 ? 1 : 0,  // 1 if gameStatus is 2, 0 otherwise
+      });
+
+
+      // Update the game
+      await axios.put('games/' + game.data.data.game_id, {
+        winner_user_id: game.gameStatus === 1 ? game.player1.id : game.gameStatus === 2 ? game.player2.id : null,
+        status: 'E',
+        ended_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        total_time: gameTime.value,
+        total_turns_winner: game.turns[game.gameStatus]
+      });
     }
   })
+
+
   socket.on('gameChanged', (game) => {
     // console.log('Game changed: ', game)
     updateGame(game)
@@ -157,6 +177,7 @@ export const useMultiplayerGamesStore = defineStore('multiPlayerGames', () => {
   return {
     games,
     totalGames,
+    setGameTime,
     playerNumberOfCurrentUser,
     fetchPlayingGames,
     play,

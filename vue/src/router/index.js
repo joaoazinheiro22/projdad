@@ -1,6 +1,5 @@
 import HomeComponent from '@/components/HomeComponent.vue'
 import Login from '@/components/auth/Login.vue'
-import WebSocketTester from '@/components/WebSocketTester.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import GameBoard from '@/components/games/GameBoard.vue'
 import Register from '@/components/auth/Register.vue'
@@ -100,15 +99,6 @@ const router = createRouter({
     {
       path: '/multiplayer',
       component: MultiplayerGames
-    },
-    {
-      path: '/testers',
-      children: [
-        {
-          path: 'websocket',
-          component: WebSocketTester
-        }
-      ]
     }
   ]
 })
@@ -116,8 +106,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
-   // Check for root route access
-   if (to.name === 'home') {
+  // Check for root route access
+  if (to.name === 'home') {
     if (authStore.user && authStore.user.type === 'A') {
       next('/statistics') // Redirect non-admin users
       return

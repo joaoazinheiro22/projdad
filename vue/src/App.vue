@@ -15,23 +15,23 @@ const isGameScoresDropdownOpen = ref(false)
 const isHistoryDropdownOpen = ref(false)
 const cardDesignStore = useCardDesignStore()
 
-let userDestination = null 
+let userDestination = null
 
-socket.on('privateMessage', (messageObj) => { 
-userDestination = messageObj.user    
-inputDialog.value.open( 
-handleMessageFromInputDialog, 
-'Message from ' + messageObj.user.name, 
-`This is a private message sent by ${messageObj?.user?.name}!`, 
-'Reply Message', '', 
-'Close', 'Reply', 
-messageObj.message 
-) 
+socket.on('privateMessage', (messageObj) => {
+  userDestination = messageObj.user
+  inputDialog.value.open(
+    handleMessageFromInputDialog,
+    'Message from ' + messageObj.user.name,
+    `This is a private message sent by ${messageObj?.user?.name}!`,
+    'Reply Message', '',
+    'Close', 'Reply',
+    messageObj.message
+  )
 })
 
-const handleMessageFromInputDialog = (message) => { 
-storeChat.sendPrivateMessageToUser(userDestination, message) 
-} 
+const handleMessageFromInputDialog = (message) => {
+  storeChat.sendPrivateMessageToUser(userDestination, message)
+}
 
 
 const alertDialog = useTemplateRef('alert-dialog')
@@ -91,11 +91,6 @@ const toggleHistoryDropdown = () => {
               active-class="text-blue-600 font-semibold">
               Home
             </RouterLink>
-            <RouterLink to="/testers/websocket"
-              class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              active-class="text-blue-600 font-semibold">
-              WebSockets Tester
-            </RouterLink>
             <RouterLink to="/multiplayer"
               class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               active-class="text-blue-600 font-semibold">
@@ -133,7 +128,8 @@ const toggleHistoryDropdown = () => {
               </transition>
             </div>
 
-            <div v-if="authStore.userLoggedIn" class="relative" @mouseenter="isHistoryDropdownOpen = true" @mouseleave="closeHistoryDropdown">
+            <div v-if="authStore.userLoggedIn" class="relative" @mouseenter="isHistoryDropdownOpen = true"
+              @mouseleave="closeHistoryDropdown">
               <button @click="toggleHistoryDropdown"
                 class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 :class="{ 'text-blue-600': isHistoryDropdownOpen }">

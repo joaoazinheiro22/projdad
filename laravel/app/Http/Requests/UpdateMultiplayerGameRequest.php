@@ -22,10 +22,8 @@ class UpdateMultiplayerGameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
-            // 'game_id' => 'required|exists:games,id',
-            'player_won' => 'nullable',
-            'pairs_discovered' => 'nullable|integer'
+            'player_won' => 'required|boolean',
+            'pairs_discovered' => 'required|integer'
         ];
     }
 }

@@ -1,10 +1,14 @@
 <script setup>
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { computed, defineProps, inject } from 'vue'
+import { computed, defineProps, inject, watch, ref, onMounted, onUnmounted } from 'vue'
 import { useCardDesignStore } from '@/stores/cardDesign';
 import { useMultiplayerGamesStore } from '@/stores/multiplayer';
 import { useAuthStore } from '@/stores/auth';
+
+
+const timer = ref(0)
+const timerInterval = ref(null)
 
 const storeMultiplayer = useMultiplayerGamesStore()
 const storeAuth = useAuthStore()
@@ -13,6 +17,25 @@ const props = defineProps({
         type: Object,
         required: true
     }
+})
+
+const startTimer = () => {
+    timer.value = 0
+    timerInterval.value = setInterval(() => {
+        timer.value++
+    }, 1000)
+}
+
+const stopTimer = () => {
+    clearInterval(timerInterval.value)
+}
+
+onMounted(() => {
+    startTimer()
+})
+
+onUnmounted(() => {
+    stopTimer()
 })
 
 const alertDialog = inject('alertDialog')
@@ -109,6 +132,13 @@ const opponentName = computed(() => {
         : storeAuth.getFirstLastName(props.game.player1.name)
 })
 
+watch(() => props.game.gameStatus, (newStatus) => {
+    if (newStatus > 0) { // Game ended
+        stopTimer()
+        storeMultiplayer.setGameTime(timer.value)
+    }
+})
+
 const close = () => {
     storeMultiplayer.close(props.game)
 }
@@ -139,6 +169,8 @@ const play = (game, cardId) => {
             <CardTitle>#{{ props.game.data.data.id }}</CardTitle>
             <CardDescription>
                 <div class="text-base">
+                    <span class="font-bold">Time:</span> {{ Math.floor(timer / 60) }}:{{ (timer %
+                        60).toString().padStart(2, '0') }}
                     <span class="font-bold">Opponent:</span> {{ opponentName }}
                     {{ props.game.status == 'I' ? ' / Interrupted' : '' }}
                 </div>

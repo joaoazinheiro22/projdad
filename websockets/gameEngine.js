@@ -15,6 +15,7 @@ exports.createGameEngine = () => {
         gameFromDB.matchedCards = []; // Store indices of matched pairs
         gameFromDB.turns = { 1: 0, 2: 0 };
         gameFromDB.pairsDiscovered = { 1: 0, 2: 0 };
+
         console.log("Game from db: ", gameFromDB)
         return gameFromDB;
     };

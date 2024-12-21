@@ -102,17 +102,36 @@ export const useLobbyStore = defineStore('lobby', () => {
 
             const APIresponse = await axios.put(`games/${id}`, { status: 'PL' })
             const updatedGame = APIresponse.data.data
+
             console.log("ResponseLobby: ", response)
-            const dataToSend = {
+
+            // Create data objects for both players
+            const player1Data = {
+                user_id: response.player1.id,
+                game_id: updatedGame.id
+            }
+            const player2Data = {
                 user_id: response.player2.id,
                 game_id: updatedGame.id
             }
-            const multiplayerGame = await axios.post('games/multiplayer', dataToSend)
-            multiplayerGame.player1SocketId = response.player1SocketId;
-            multiplayerGame.player2SocketId = response.player2SocketId;
-            multiplayerGame.player1 = response.player1;
-            multiplayerGame.player2 = response.player2;
-            multiplayerGame.boardId = multiplayerGame.data.data.boardId;
+
+            // Make POST requests for both players
+            const player1Game = await axios.post('games/multiplayer', player1Data)
+            const player2Game = await axios.post('games/multiplayer', player2Data)
+
+            console.log("Player1Game: ", player1Game.data.data.id)
+            console.log("Player2Game: ", player2Game.data.data.id)
+
+            // Use the last response for the multiplayerGame object
+            const multiplayerGame = player2Game
+            multiplayerGame.player1SocketId = response.player1SocketId
+            multiplayerGame.player2SocketId = response.player2SocketId
+            multiplayerGame.player1GameId = player1Game.data.data.id
+            multiplayerGame.player2GameId = player2Game.data.data.id
+            multiplayerGame.player1 = response.player1
+            multiplayerGame.player2 = response.player2
+            multiplayerGame.boardId = multiplayerGame.data.data.boardId
+
             console.log('Game joined:', id)
             console.log("Response to put: ", updatedGame)
             console.log("Created Multiplayer game: ", multiplayerGame)

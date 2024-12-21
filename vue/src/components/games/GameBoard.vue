@@ -43,7 +43,8 @@ initGame();
     <h2 class="mb-2">Timer: {{ gameboardStore.formattedTime }}</h2>
     <h2 class="mb-4">Number of turns: {{ gameboardStore.turnCount }} </h2>
     <h2 v-if="authStore.user" class="mb-2">Username: {{ authStore.userFirstLastName }} </h2>
-    <button v-if="authStore.user" @click="gameboardStore.revealHint()" class="bg-blue-500 text-white px-4 py-2 rounded mr-2 mb-4">Hint</button>
+    <button v-if="authStore.user" @click="gameboardStore.revealHint()"
+      class="bg-blue-500 text-white px-4 py-2 rounded mr-2 mb-4">Hint</button>
 
     <!-- <div v-if="errorMessage" class="text-red-500 text-sm">
                 {{ errorMessage }}
@@ -58,7 +59,7 @@ initGame();
         <div class="card" :class="{ 'is-flipped': card.isFlipped }" @click="gameboardStore.flipCard(card)">
           <div class="card-front">
             <img class="w-full h-full object-contain" :src="card.image" alt="Card Front" :class="{
-              'opacity-50': gameboardStore.matchedCards.includes(card.id)
+              'opacity-0': gameboardStore.matchedCards.includes(card.id)
             }">
           </div>
           <div class="card-back">

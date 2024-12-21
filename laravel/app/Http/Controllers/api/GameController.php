@@ -133,21 +133,15 @@ class GameController extends Controller
         return new GameResource($game);
     }
 
-    public function updateMultiplayer(UpdateMultiplayerGameRequest $request, Game $game)
+    public function updateMultiplayer(UpdateMultiplayerGameRequest $request, $id)
     {
-        // $game->fill($request->validated());
-        // $game->save();
-        // return new MultiplayerGameResource($game);
+        $request->validated();
+        $game = MultiplayerGamesPlayed::findOrFail($id);
 
         $game->fill($request->validated());
         $game->save();
 
-        // Remover o parâmetro 'board_id' antes de retornar o recurso
-        $gameResource = new MultiplayerGameResource($game);
-        $gameArray = $gameResource->toArray(request());
-        unset($gameArray['boardId']);
-
-        return response()->json($gameArray);
+        return response()->json(['message' => 'Game updated successfully'], 200);
     }
 
     /**
