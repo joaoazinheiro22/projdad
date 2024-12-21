@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Http;
 
 class TransactionService
 {
+
+    private const PAYMENT_LIMITS = [
+        'MBWAY' => 5,
+        'PAYPAL' => 10,
+        'IBAN' => 50,
+        'MB' => 20,
+        'VISA' => 30
+    ];
+
+
     // Welcome bonus for new users
     public function giveWelcomeBonus(User $user)
     {
@@ -52,6 +62,16 @@ class TransactionService
     private function validatePayment($paymentType, $reference, $amount)
     {
         try {
+
+            // Check payment limit
+            $limit = self::PAYMENT_LIMITS[strtoupper($paymentType)];
+            if ($amount > $limit) {
+                return [
+                    'success' => false,
+                    'message' => "Payment failed: Amount exceeds {$paymentType} limit of {$limit}€"
+                ];
+            }
+
             $response = Http::post('https://dad-202425-payments-api.vercel.app/api/debit', [
                 'type' => $paymentType,
                 'reference' => $reference,

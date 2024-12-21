@@ -12,15 +12,15 @@ const gameStore = useGameStore();
 
 // Function to navigate to the GameBoard
 const goToGameBoard = (mode) => {
-  
-  if((mode === '4x4' || mode === '6x6') && authStore.userBrainCoinsBalance < 1) {
+
+  if ((mode === '4x4' || mode === '6x6') && authStore.userBrainCoinsBalance < 1) {
     toast({
       description: 'You need at least 1 brain coin to play this mode',
       variant: 'destructive'
     })
     return;
   }
-  
+
   router.push({ name: 'GameBoard', params: { mode } });
 };
 
@@ -111,7 +111,7 @@ onMounted(() => {
     <!-- More Games Section -->
     <div v-if="authStore.userPlayer" class="bg-white w-full py-12">
       <div class="max-w-5xl mx-auto px-4 text-center">
-        <h2 class="text-2xl font-bold mb-8">More Info Here</h2>
+        <h2 class="text-2xl font-bold mb-8">Bonus!</h2>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
           <div class="bg-yellow-400 rounded-md p-6 shadow-md">
             <button @click="goToShop" class="text-lg font-bold">Shop</button>

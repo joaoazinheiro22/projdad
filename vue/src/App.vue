@@ -164,12 +164,21 @@ const toggleHistoryDropdown = () => {
             <div v-if="authStore.user" class="flex items-center space-x-2">
 
               <div v-if="authStore.userType !== 'A'" class="flex items-center space-x-2">
-                <img src="@/assets/brain-coins-logo.png" alt="Brain Coins Logo" class="w-12 h-12">
-                <span>{{ authStore.userBrainCoinsBalance }}</span>
-                <RouterLink to="/purchaseBrainCoins"
-                  class="text-gray-900 hover:text-blue-600 px-2 py-1 rounded-md text-sm font-medium transition-colors">
-                  +
-                </RouterLink>
+                <div
+                  class="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-2 rounded-full border border-amber-200 shadow-sm hover:shadow-md transition-all duration-300">
+                  <div class="relative">
+                    <img src="@/assets/brain-coins-logo.png" alt="Brain Coins" class="w-8 h-8">
+                  </div>
+
+                  <span class="font-semibold text-amber-900 min-w-[3ch] text-center">
+                    {{ authStore.userBrainCoinsBalance.toLocaleString() }}
+                  </span>
+
+                  <RouterLink to="/purchaseBrainCoins"
+                    class="hover:bg-amber-100 rounded-full w-6 h-6 flex items-center justify-center transition-colors">
+                    <span class="text-amber-700 font-medium">+</span>
+                  </RouterLink>
+                </div>
               </div>
               <RouterLink :to="`/profile/${authStore.userId}`"
                 class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"

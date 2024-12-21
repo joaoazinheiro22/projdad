@@ -62,8 +62,6 @@ async function submitPurchase() {
     <div class="max-w-3xl mx-auto py-12">
         <h1 class="text-3xl font-bold mb-8">Purchase Brain Coins</h1>
 
-        <ErrorMessage :errorMessage="error" />
-
         <form @submit.prevent="submitPurchase" class="space-y-6">
             <div class="space-y-2">
                 <label for="paymentType" class="block text-sm font-medium text-gray-700">Payment Type</label>
