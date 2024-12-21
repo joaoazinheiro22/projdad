@@ -114,7 +114,7 @@ export const useMultiplayerGamesStore = defineStore('multiPlayerGames', () => {
   socket.on('gameEnded', async (game) => {
     updateGame(game)
     const currentUser = playerNumberOfCurrentUser(game)
-    console.log("Game after end: ", game)
+    //console.log("Game after end: ", game)
 
 
     if (currentUser === 1 || currentUser === 2) {

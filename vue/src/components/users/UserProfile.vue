@@ -30,14 +30,12 @@ let userProfile = ref({
 const removeAccountPassword = ref('')
 const showRemoveAccountConfirmation = ref(false)
 
-console.log('User Profile:', userProfile)
 
 const uploadPhoto = async (file) => {
     const formData = new FormData()
     formData.append('photo', file)
     const response = await authStore.uploadPhoto(formData)
     if (response.photo_filename) {
-        console.log('Photo uploaded:', response.photo_filename)
         userProfile.value.photo_filename = response.photo_filename
         userProfile.value.photo = authStore.userPhotoUrl // Update the photo URL
     }
@@ -71,18 +69,18 @@ const confirmRemoveAccount = async (user) => {
         errorStore.setErrorMessages('Please enter your password to confirm account removal')
         return
     }
-    if (!user){
+    if (!user) {
         user = userStore.fetchUser()
     }
     try {
         const success = await userStore.deleteUser(user);
         if (success) {
-        toast({
-            description: 'Account removed successfully',
-        });
-        router.push('/');
+            toast({
+                description: 'Account removed successfully',
+            });
+            router.push('/');
         }
-        
+
     } catch (error) {
         console.log('Error removing account:', error.response?.data)
     }
@@ -153,7 +151,8 @@ onMounted(async () => {
             <Button type="submit">Update Profile</Button>
         </form>
 
-        <Button v-if="!authStore.userAdmin" @click="initiateAccountRemoval" class="mt-4 bg-red-500 hover:bg-red-700 text-white">Remove Account</Button>
+        <Button v-if="!authStore.userAdmin" @click="initiateAccountRemoval"
+            class="mt-4 bg-red-500 hover:bg-red-700 text-white">Remove Account</Button>
 
         <!-- Account Removal Confirmation Modal -->
         <div v-if="showRemoveAccountConfirmation"

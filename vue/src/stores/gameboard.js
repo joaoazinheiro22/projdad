@@ -1,11 +1,10 @@
-import { ref, computed, isMemoSame } from 'vue'
+import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from './user'
-import { errorMessages } from 'vue/compiler-sfc'
-import { toast } from '@/components/ui/toast'
 import { useToast } from '@/components/ui/toast/use-toast'
+
 
 export const useGameBoardStore = defineStore('gameboard', () => {
     const authStore = useAuthStore()
@@ -44,15 +43,26 @@ export const useGameBoardStore = defineStore('gameboard', () => {
 
     // Timer Methods
     const startTimer = () => {
+        if (timerInterval.value) {
+            clearInterval(timerInterval.value)
+        }
         startTime.value = Date.now()
+        elapsedTime.value = 0
+
         timerInterval.value = setInterval(() => {
-            elapsedTime.value = Date.now() - startTime.value
+            elapsedTime.value += 1000 // Increment by exactly 1 second
         }, 1000)
     }
 
     const stopTimer = () => {
         if (timerInterval.value) {
             clearInterval(timerInterval.value)
+            timerInterval.value = null
+        }
+        // Calculate final elapsed time
+        if (startTime.value) {
+            const finalTime = Date.now() - startTime.value
+            elapsedTime.value = Math.floor(finalTime / 1000) * 1000 // Round to nearest second
         }
     }
 
@@ -207,6 +217,31 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         }, 1000);
     }
 
+    const giveUpGame = async () => {
+        stopTimer();
+
+        if (authStore.user && currentGameId.value) {
+            try {
+                const gameData = {
+                    status: 'I', // Incomplete/Interrupted
+                    ended_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+                    total_time: Math.floor(elapsedTime.value / 1000),
+                    total_turns_winner: turnCount.value
+                };
+
+                await axios.put(`games/${currentGameId.value}`, gameData);
+
+                // Reset game state
+                cards.value.forEach(card => card.isFlipped = false);
+                matchedCards.value = [];
+                selectedCards.value = [];
+
+            } catch (error) {
+                console.error('Error updating game data:', error);
+            }
+        }
+    };
+
 
     const checkGameCompletion = () => {
         const allCardsFlipped = cards.value.every(card => card.isFlipped)
@@ -223,7 +258,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
 
     // Save Game Results
     const saveSinglePlayerGameResults = async () => {
-        console.log(turnCount.value)
+        //console.log(turnCount.value)
         try {
             const gameData = {
                 winner_user_id: authStore.userId,
@@ -263,6 +298,7 @@ export const useGameBoardStore = defineStore('gameboard', () => {
         resetGame,
         startTimer,
         stopTimer,
-        revealHint
+        revealHint,
+        giveUpGame
     }
 })

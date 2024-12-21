@@ -41,7 +41,6 @@ onUnmounted(() => {
 const alertDialog = inject('alertDialog')
 
 const cardDesignStore = useCardDesignStore()
-console.log(props.game.theBoard)
 const gameEnded = computed(() => {
     return props.game.gameStatus > 0
 })

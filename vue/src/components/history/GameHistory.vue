@@ -14,7 +14,6 @@ const isLoading = ref(true)
 const fetchGameHistory = async () => {
     isLoading.value = true
     await gameStore.fetchGameHistory()
-    console.log('Fetched game history:', gameStore.gameHistory)
     isLoading.value = false
 }
 
@@ -50,12 +49,13 @@ onMounted(async () => {
 </script>
 
 <template>
-    
+
     <div v-if="isLoading" class="flex flex-col items-center justify-center h-screen">
         <p class="text-xl font-bold text-gray-700">Page Loading...</p>
     </div>
 
-    <h1 class="text-3xl font-bold mb-8 text-center">{{ authStore.userAdmin ? 'All Games History' : 'Your Game History' }}</h1>
+    <h1 class="text-3xl font-bold mb-8 text-center">{{ authStore.userAdmin ? 'All Games History' : 'Your Game History'
+        }}</h1>
 
     <div v-if="gameStore.gameHistory.length > 0" class="bg-white w-full">
         <table class="min-w-full bg-white border border-gray-300">
@@ -78,7 +78,8 @@ onMounted(async () => {
                     <td class="py-2 border-b text-center">{{ game.board_size }}</td>
                     <td class="py-2 border-b text-center">{{ game.status }}</td>
                     <td class="py-2 border-b text-center">{{ game.total_time }}</td>
-                    <td class="py-2 border-b text-center">{{ game.total_turns_winner ? game.total_turns_winner : '-' }}</td>
+                    <td class="py-2 border-b text-center">{{ game.total_turns_winner ? game.total_turns_winner : '-' }}
+                    </td>
                     <td class="py-2 border-b text-center">{{ game.type === 'Multiplayer' ? game.creator : '-' }}</td>
                     <td class="py-2 border-b text-center">{{ game.type === 'Multiplayer' ? game.winner : '-' }}</td>
                 </tr>

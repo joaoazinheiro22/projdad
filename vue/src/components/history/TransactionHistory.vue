@@ -55,7 +55,9 @@ onMounted(async () => {
         <p class="text-xl font-bold text-gray-700">Page Loading...</p>
     </div>
 
-    <h1 class="text-3xl font-bold mb-8 text-center">{{ authStore.userAdmin ? 'All Transactions History' : 'Your Transaction History' }}</h1>
+    <h1 class="text-3xl font-bold mb-8 text-center">
+        {{ authStore.userAdmin ? 'All Transactions History' : 'Your Transaction History' }}
+    </h1>
 
     <div v-if="transactionStore.transactionHistory.length > 0" class="bg-white w-full">
         <table class="min-w-full bg-white border border-gray-300">

@@ -54,7 +54,6 @@ export const useLobbyStore = defineStore('lobby', () => {
             }
 
             const response = await axios.post('games', gameData)
-            console.log('Game created:', response.data.data.id)
             const dbGameId = response.data.data.id
 
 
@@ -92,7 +91,6 @@ export const useLobbyStore = defineStore('lobby', () => {
     // join a game of the lobby
     const joinGame = (id, board) => {
         storeError.resetMessages()
-        console.log('Joining game:', id)
 
         // Ensure we pass the raw ID value, not a ref
         socket.emit('joinGame', Number(id), async (response) => {
@@ -103,7 +101,6 @@ export const useLobbyStore = defineStore('lobby', () => {
             const APIresponse = await axios.put(`games/${id}`, { status: 'PL' })
             const updatedGame = APIresponse.data.data
 
-            console.log("ResponseLobby: ", response)
 
             // Create data objects for both players
             const player1Data = {
@@ -119,8 +116,6 @@ export const useLobbyStore = defineStore('lobby', () => {
             const player1Game = await axios.post('games/multiplayer', player1Data)
             const player2Game = await axios.post('games/multiplayer', player2Data)
 
-            console.log("Player1Game: ", player1Game.data.data.id)
-            console.log("Player2Game: ", player2Game.data.data.id)
 
             // Use the last response for the multiplayerGame object
             const multiplayerGame = player2Game
@@ -132,9 +127,7 @@ export const useLobbyStore = defineStore('lobby', () => {
             multiplayerGame.player2 = response.player2
             multiplayerGame.boardId = multiplayerGame.data.data.boardId
 
-            console.log('Game joined:', id)
-            console.log("Response to put: ", updatedGame)
-            console.log("Created Multiplayer game: ", multiplayerGame)
+
 
             socket.emit('startGame', multiplayerGame, (startedGame) => {
                 console.log('Game has started', startedGame)
