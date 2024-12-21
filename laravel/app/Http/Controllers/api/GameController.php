@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGameRequest;
 use App\Http\Requests\StoreMultiplayerGameRequest;
 use App\Http\Requests\UpdateGameRequest;
+use App\Http\Requests\UpdateMultiplayerGameRequest;
 use App\Http\Resources\MultiplayerGameResource;
 use App\Models\MultiplayerGamesPlayed;
 use Illuminate\Http\Request;
@@ -130,6 +131,23 @@ class GameController extends Controller
         $game->fill($request->validated());
         $game->save();
         return new GameResource($game);
+    }
+
+    public function updateMultiplayer(UpdateMultiplayerGameRequest $request, Game $game)
+    {
+        // $game->fill($request->validated());
+        // $game->save();
+        // return new MultiplayerGameResource($game);
+
+        $game->fill($request->validated());
+        $game->save();
+
+        // Remover o parâmetro 'board_id' antes de retornar o recurso
+        $gameResource = new MultiplayerGameResource($game);
+        $gameArray = $gameResource->toArray(request());
+        unset($gameArray['boardId']);
+
+        return response()->json($gameArray);
     }
 
     /**
