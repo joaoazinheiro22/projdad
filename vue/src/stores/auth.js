@@ -64,7 +64,8 @@ export const useAuthStore = defineStore('auth', () => {
   const userPhotoUrl = computed(() => {
     const photoFile = user.value ? (user.value.photo_filename ?? '') : ''
     if (photoFile) {
-      return axios.defaults.baseURL.replace('/api', '') + '/storage/photos/' + photoFile
+      // return axios.defaults.baseURL.replace('/api', '') + '/storage/photos/' + photoFile
+      return `http://${inject("serverBaseUrl")}/storage/photos/${photoFile}`
     }
     return avatarNoneAssetURL
   })

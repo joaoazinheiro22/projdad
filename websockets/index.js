@@ -16,8 +16,10 @@ const io = require("socket.io")(httpServer, {
   }
 });
 
-httpServer.listen(3000, () => {
-  console.log('listening on *:3000');
+const PORT = process.env.APP_PORT || 8086;
+
+httpServer.listen(PORT, () => {
+  console.log('listening on *:${PORT}');
 });
 
 io.on('connection', (socket) => {
