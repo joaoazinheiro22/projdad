@@ -19,7 +19,8 @@ const wsConnection = import.meta.env.VITE_WS_CONNECTION
 console.log('api domain', apiDomain)
 console.log('ws connection', wsConnection)
 
-axios.defaults.baseURL = `http://${apiDomain}/api`
+// axios.defaults.baseURL = `http://${apiDomain}/api`
+axios.defaults.baseURL = 'http://localhost:8085/api'
 
 //app.provide('socket', io(wsConnection)) uncomment this line when deploying
 

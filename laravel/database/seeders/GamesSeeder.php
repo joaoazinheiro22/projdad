@@ -79,17 +79,41 @@ class GamesSeeder extends Seeder
             DB::table('games')->insert($games);
         }
         $this->fillAllMultiplayerGamesPlayed();
-        $this->command->info("Setting winner to null on ALL uneded games or single player games");
-        // DB::table('games')->whereNot('status', 'E')->update(['winner_user_id' => null]);
-        // $this->command->info("Clearing winner_user_id for non ended multiplayer games");
-        DB::update('update games set winner_user_id = null where type = "S" OR (type = "M" and status <> "E")');
 
-        DB::update('update games set total_turns_winner = CASE
-                        WHEN board_id = 1 THEN 6 + ROUND(RAND() * 12)
-                        WHEN board_id = 2 THEN 8 + ROUND(RAND() * 16)
-                        ELSE 18 + ROUND(RAND() * 54)
-                    END
-                    where total_time is not null');
+        $this->command->info("Setting winner to null on ALL unneeded games or single player games");
+
+        // Use query builder (portable) instead of raw SQL with double quotes
+        DB::table('games')
+            ->where('type', 'S')
+            ->orWhere(function ($q) {
+                $q->where('type', 'M')->where('status', '<>', 'E');
+            })
+            ->update(['winner_user_id' => null]);
+
+        // Update total_turns_winner with driver-aware SQL
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'sqlite') {
+            // SQLite: abs(random()) % N yields 0..N-1
+            DB::statement(<<<'SQL'
+                UPDATE games SET total_turns_winner = CASE
+                    WHEN board_id = 1 THEN 6 + (abs(random()) % 13)
+                    WHEN board_id = 2 THEN 8 + (abs(random()) % 17)
+                    ELSE 18 + (abs(random()) % 55)
+                END
+                WHERE total_time IS NOT NULL
+            SQL);
+        } else {
+            // MySQL (and DBs supporting RAND())
+            DB::statement(<<<'SQL'
+                UPDATE games SET total_turns_winner = CASE
+                    WHEN board_id = 1 THEN 6 + ROUND(RAND() * 12)
+                    WHEN board_id = 2 THEN 8 + ROUND(RAND() * 16)
+                    ELSE 18 + ROUND(RAND() * 54)
+                END
+                WHERE total_time IS NOT NULL
+            SQL);
+        }
 
         $this->command->info("Games seeder - End");
     }
